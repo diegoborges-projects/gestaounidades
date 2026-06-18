@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unidades por Regional — Junho/2026</title>
+<title>Gestão de Unidades — Central de Projetos</title>
 <style>
   :root{
     --navy:#1E2761;
@@ -17,6 +17,18 @@
     --ink:#1A2238;
     --ink-soft:#5B647A;
     --line:#E3E8F2;
+    --pill-bg:#FFFFFF;
+    --row-hover:#FAFBFD;
+  }
+  [data-theme="dark"]{
+    --bg:#11151F;
+    --card:#1A2030;
+    --ink:#E7EAF3;
+    --ink-soft:#9AA3BD;
+    --line:#2B3247;
+    --ice:#27345C;
+    --pill-bg:#222942;
+    --row-hover:#202840;
   }
   *{box-sizing:border-box;}
   body{
@@ -24,13 +36,14 @@
     font-family:Arial, Helvetica, sans-serif;
     background:var(--bg);
     color:var(--ink);
+    transition:background .25s ease, color .25s ease;
   }
 
   /* HEADER */
   header{
     background:linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
     color:#fff;
-    padding:28px 36px 22px;
+    padding:24px 36px 0;
   }
   .header-top{
     display:flex;
@@ -38,6 +51,7 @@
     align-items:flex-start;
     flex-wrap:wrap;
     gap:16px;
+    padding-bottom:20px;
   }
   .brand-tag{
     font-size:11px;
@@ -64,6 +78,84 @@
     line-height:1.6;
   }
   .header-meta strong{color:#fff;}
+
+  /* VERSION BAR */
+  .version-bar{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:var(--pill-bg);
+    color:var(--navy);
+    font-size:11.5px;
+    font-weight:bold;
+    padding:7px 14px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  [data-theme="dark"] .pill{color:#C9D2E8;}
+  .pill-update{font-weight:normal; color:var(--ink-soft);}
+  [data-theme="dark"] .pill-update{color:#9AA3BD;}
+  .theme-toggle{
+    width:46px;
+    height:26px;
+    border-radius:14px;
+    background:var(--green);
+    border:none;
+    cursor:pointer;
+    position:relative;
+    padding:0;
+    flex-shrink:0;
+  }
+  .theme-toggle .knob{
+    position:absolute;
+    top:3px;
+    left:3px;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:#fff;
+    transition:left .2s ease;
+  }
+  [data-theme="dark"] .theme-toggle{background:#3A4360;}
+  [data-theme="dark"] .theme-toggle .knob{left:23px;}
+  .theme-toggle:focus-visible{outline:2px solid #fff; outline-offset:2px;}
+
+  /* TABS */
+  .tabs{
+    display:flex;
+    gap:4px;
+    padding-top:4px;
+  }
+  .tab-btn{
+    background:transparent;
+    border:none;
+    color:#C9D2E8;
+    font-family:Arial, sans-serif;
+    font-size:13.5px;
+    font-weight:bold;
+    padding:12px 22px;
+    cursor:pointer;
+    border-radius:8px 8px 0 0;
+    position:relative;
+  }
+  .tab-btn.active{
+    background:var(--bg);
+    color:var(--navy);
+  }
+  .tab-btn:not(.active):hover{
+    background:rgba(255,255,255,.08);
+    color:#fff;
+  }
+  .tab-btn:focus-visible{outline:2px solid #fff;}
+
+  .view{display:none;}
+  .view.active{display:block;}
 
   /* KPI ROW */
   .kpis{
@@ -122,6 +214,8 @@
     border-radius:8px;
     font-size:13px;
     font-family:Arial, sans-serif;
+    background:var(--card);
+    color:var(--ink);
   }
   .controls input[type="text"]:focus{
     outline:2px solid var(--navy);
@@ -151,6 +245,33 @@
     color:#fff;
   }
   .filter-btn:focus-visible{outline:2px solid var(--navy);}
+
+  .btn-primary{
+    background:var(--green);
+    color:#fff;
+    border:none;
+    padding:10px 18px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:bold;
+    cursor:pointer;
+    font-family:Arial, sans-serif;
+    white-space:nowrap;
+  }
+  .btn-primary:hover{background:#009646;}
+  .btn-primary:focus-visible{outline:2px solid var(--navy);}
+  .btn-secondary{
+    background:var(--card);
+    color:var(--navy);
+    border:1px solid var(--line);
+    padding:9px 16px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:bold;
+    cursor:pointer;
+    font-family:Arial, sans-serif;
+  }
+  .btn-secondary:hover{background:var(--ice);}
 
   /* MAIN GRID */
   .main-grid{
@@ -235,14 +356,17 @@
     white-space:nowrap;
   }
   thead th:hover{background:var(--navy-dark);}
+  thead th.no-sort{cursor:default;}
+  thead th.no-sort:hover{background:var(--navy);}
   thead th .arrow{font-size:10px; opacity:.6; margin-left:4px;}
   tbody tr{
     border-bottom:1px solid var(--line);
   }
-  tbody tr:hover{background:#FAFBFD;}
+  tbody tr:hover{background:var(--row-hover);}
   tbody td{
     padding:11px 16px;
     color:var(--ink);
+    vertical-align:middle;
   }
   .unit-name{font-weight:bold;}
   .tag{
@@ -295,6 +419,151 @@
     font-size:13px;
   }
 
+  /* STATUS BADGE (tarefas) */
+  .status-select{
+    font-family:Arial, sans-serif;
+    font-size:11.5px;
+    font-weight:bold;
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:5px 8px;
+    cursor:pointer;
+    background:var(--card);
+    color:var(--ink);
+  }
+
+  .due-date{font-size:12.5px;}
+  .due-soon{color:var(--amber); font-weight:bold;}
+  .due-late{color:var(--red); font-weight:bold;}
+
+  .row-actions{
+    display:flex;
+    gap:6px;
+  }
+  .icon-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    border-radius:6px;
+    width:30px;
+    height:30px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+  }
+  .icon-btn:hover{background:var(--ice);}
+  .icon-btn.danger:hover{background:#FDECEC; border-color:var(--red);}
+
+  /* MODAL */
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(26,34,56,.5);
+    z-index:100;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background:var(--card);
+    border-radius:12px;
+    width:100%;
+    max-width:480px;
+    max-height:90vh;
+    overflow-y:auto;
+    box-shadow:0 20px 60px rgba(0,0,0,.3);
+  }
+  .modal-header{
+    background:var(--navy);
+    color:#fff;
+    padding:18px 24px;
+    border-radius:12px 12px 0 0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .modal-header h3{margin:0; font-size:16px; font-weight:bold;}
+  .modal-close{
+    background:transparent;
+    border:none;
+    color:#fff;
+    font-size:20px;
+    cursor:pointer;
+    line-height:1;
+    padding:0;
+    width:28px;
+    height:28px;
+  }
+  .modal-body{padding:22px 24px;}
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;
+    font-size:12px;
+    font-weight:bold;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:6px;
+  }
+  .field input, .field select, .field textarea{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-size:13.5px;
+    font-family:Arial, sans-serif;
+    color:var(--ink);
+    background:var(--card);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline:2px solid var(--navy);
+    outline-offset:-1px;
+  }
+  .field textarea{resize:vertical; min-height:70px;}
+  .field-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .modal-footer{
+    padding:16px 24px 22px;
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+  }
+  .required-mark{color:var(--red);}
+
+  .toast{
+    position:fixed;
+    bottom:24px;
+    right:24px;
+    background:var(--navy);
+    color:#fff;
+    padding:13px 20px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:bold;
+    box-shadow:0 8px 24px rgba(0,0,0,.2);
+    z-index:200;
+    display:none;
+  }
+  .toast.show{display:block;}
+  .toast.error{background:var(--red);}
+
+  .sync-status{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:0 36px 10px;
+  }
+  .sync-dot{width:7px;height:7px;border-radius:50%; background:var(--green);}
+  .sync-dot.offline{background:var(--amber);}
+
   footer{
     padding:16px 36px 28px;
     font-size:11.5px;
@@ -305,6 +574,7 @@
     .main-grid{grid-template-columns:1fr;}
     .kpis{grid-template-columns:repeat(2,1fr);}
     .header-meta{text-align:left;}
+    .field-row{grid-template-columns:1fr;}
   }
 </style>
 </head>
@@ -314,62 +584,178 @@
   <div class="header-top">
     <div>
       <p class="brand-tag">Sankhya · Central de Projetos</p>
-      <h1>Unidades por Regional</h1>
-      <p class="subtitle">Termômetro de saúde, tipo de unidade (BP/Filial) e volume de projetos em Fase 1</p>
+      <h1>Gestão de Unidades</h1>
+      <p class="subtitle">Visão consolidada por regional e controle de tarefas do time</p>
     </div>
     <div class="header-meta">
       <div><strong>Competência:</strong> Junho/2026</div>
-      <div>Uberlândia, 18 de Junho de 2026</div>
+      <div class="version-bar" style="justify-content:flex-end; margin-top:8px;">
+        <span class="pill"><span class="pill-update" id="lastUpdatePill">atualizado —</span></span>
+        <span class="pill" id="versionPill">v1.00</span>
+        <button class="theme-toggle" id="themeToggle" title="Alternar tema claro/escuro" aria-label="Alternar tema claro/escuro">
+          <span class="knob"></span>
+        </button>
+      </div>
     </div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" data-view="executivo">Visão Executiva</button>
+    <button class="tab-btn" data-view="tarefas">Controle de Tarefas</button>
   </div>
 </header>
 
-<section class="kpis" id="kpiRow"></section>
+<section class="view active" id="view-executivo">
 
-<div class="controls">
-  <input type="text" id="searchInput" placeholder="Buscar unidade ou regional...">
-  <div class="filter-group" id="tipoFilter">
-    <button class="filter-btn active" data-tipo="todos">Todos</button>
-    <button class="filter-btn" data-tipo="BP">BP</button>
-    <button class="filter-btn" data-tipo="Filial">Filial</button>
+  <section class="kpis" id="kpiRowExec"></section>
+
+  <div class="controls">
+    <input type="text" id="searchInputExec" placeholder="Buscar unidade ou regional...">
+    <div class="filter-group" id="tipoFilterExec">
+      <button class="filter-btn active" data-tipo="todos">Todos</button>
+      <button class="filter-btn" data-tipo="BP">BP</button>
+      <button class="filter-btn" data-tipo="Filial">Filial</button>
+    </div>
+    <div class="filter-group" id="thermFilterExec">
+      <button class="filter-btn active" data-therm="todos">Termômetro</button>
+      <button class="filter-btn" data-therm="Crítico">Crítico</button>
+      <button class="filter-btn" data-therm="Atenção">Atenção</button>
+      <button class="filter-btn" data-therm="Saudável">Saudável</button>
+    </div>
   </div>
-  <div class="filter-group" id="thermFilter">
-    <button class="filter-btn active" data-therm="todos">Termômetro</button>
-    <button class="filter-btn" data-therm="Crítico">Crítico</button>
-    <button class="filter-btn" data-therm="Atenção">Atenção</button>
-    <button class="filter-btn" data-therm="Saudável">Saudável</button>
+
+  <div class="main-grid">
+    <aside class="sidebar">
+      <h2>Regionais (GRP)</h2>
+      <div id="regionalListExec"></div>
+    </aside>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="unidade">Unidade <span class="arrow">↕</span></th>
+            <th data-sort="tipo">Tipo <span class="arrow">↕</span></th>
+            <th data-sort="regional">Regional <span class="arrow">↕</span></th>
+            <th data-sort="termometro">Termômetro <span class="arrow">↕</span></th>
+            <th data-sort="volume_fase1">Vol. Fase 1 <span class="arrow">↕</span></th>
+          </tr>
+        </thead>
+        <tbody id="tableBodyExec"></tbody>
+      </table>
+      <div class="empty-state" id="emptyStateExec" style="display:none;">Nenhuma unidade encontrada para esse filtro.</div>
+    </div>
+  </div>
+
+  <footer>
+    Fonte: REDISTRIBUIÇÃO UNIDADES - REGIONAIS.xlsx, aba Junho2026. Uso interno da Central de Projetos.
+  </footer>
+</section>
+
+<section class="view" id="view-tarefas">
+
+  <section class="kpis" id="kpiRowTask"></section>
+
+  <div class="sync-status" id="syncStatus">
+    <span class="sync-dot" id="syncDot"></span>
+    <span id="syncText">Conectando à planilha...</span>
+  </div>
+
+  <div class="controls">
+    <input type="text" id="searchInputTask" placeholder="Buscar tarefa, unidade ou responsável...">
+    <div class="filter-group" id="statusFilterTask">
+      <button class="filter-btn active" data-status="todos">Todos</button>
+      <button class="filter-btn" data-status="Pendente">Pendente</button>
+      <button class="filter-btn" data-status="EmAndamento">Em andamento</button>
+      <button class="filter-btn" data-status="Concluída">Concluída</button>
+      <button class="filter-btn" data-status="Atrasada">Atrasada</button>
+    </div>
+    <button class="btn-primary" id="btnNovaTarefa">+ Incluir tarefa</button>
+  </div>
+
+  <div class="main-grid">
+    <aside class="sidebar">
+      <h2>Regionais (GRP)</h2>
+      <div id="regionalListTask"></div>
+    </aside>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="descricao">Tarefa <span class="arrow">↕</span></th>
+            <th data-sort="unidade">Unidade <span class="arrow">↕</span></th>
+            <th data-sort="regional">Regional <span class="arrow">↕</span></th>
+            <th data-sort="responsavel">Responsável <span class="arrow">↕</span></th>
+            <th data-sort="prazo">Prazo <span class="arrow">↕</span></th>
+            <th data-sort="status">Status <span class="arrow">↕</span></th>
+            <th class="no-sort">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tableBodyTask"></tbody>
+      </table>
+      <div class="empty-state" id="emptyStateTask" style="display:none;">Nenhuma tarefa cadastrada para esse filtro. Clique em "Incluir tarefa" para começar.</div>
+    </div>
+  </div>
+
+  <footer>
+    Dados de tarefas armazenados em planilha Google Sheets via Apps Script. Visível para todo o time da Central de Projetos.
+  </footer>
+</section>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Incluir tarefa</h3>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="taskForm">
+        <input type="hidden" id="taskId">
+        <div class="field">
+          <label for="taskRegional">Regional <span class="required-mark">*</span></label>
+          <select id="taskRegional" required></select>
+        </div>
+        <div class="field">
+          <label for="taskUnidade">Unidade (BP/Filial) <span class="required-mark">*</span></label>
+          <select id="taskUnidade" required>
+            <option value="">Selecione a regional primeiro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="taskDescricao">Descrição da ação <span class="required-mark">*</span></label>
+          <textarea id="taskDescricao" required placeholder="Ex: Cobrar plano de ação de turnover com o gestor da unidade"></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="taskResponsavel">Responsável <span class="required-mark">*</span></label>
+            <input type="text" id="taskResponsavel" required placeholder="Nome do responsável">
+          </div>
+          <div class="field">
+            <label for="taskPrazo">Prazo <span class="required-mark">*</span></label>
+            <input type="date" id="taskPrazo" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="taskStatus">Status</label>
+          <select id="taskStatus">
+            <option value="Pendente">Pendente</option>
+            <option value="EmAndamento">Em andamento</option>
+            <option value="Concluída">Concluída</option>
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="btnCancelModal">Cancelar</button>
+      <button class="btn-primary" id="btnSaveTask">Salvar tarefa</button>
+    </div>
   </div>
 </div>
 
-<div class="main-grid">
-  <aside class="sidebar">
-    <h2>Regionais (GRP)</h2>
-    <div id="regionalList"></div>
-  </aside>
-
-  <div class="table-card">
-    <table>
-      <thead>
-        <tr>
-          <th data-sort="unidade">Unidade <span class="arrow">↕</span></th>
-          <th data-sort="tipo">Tipo <span class="arrow">↕</span></th>
-          <th data-sort="regional">Regional <span class="arrow">↕</span></th>
-          <th data-sort="termometro">Termômetro <span class="arrow">↕</span></th>
-          <th data-sort="volume_fase1">Vol. Fase 1 <span class="arrow">↕</span></th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
-    <div class="empty-state" id="emptyState" style="display:none;">Nenhuma unidade encontrada para esse filtro.</div>
-  </div>
-</div>
-
-<footer>
-  Fonte: REDISTRIBUIÇÃO UNIDADES - REGIONAIS.xlsx, aba Junho2026. Uso interno da Central de Projetos.
-</footer>
+<div class="toast" id="toast"></div>
 
 <script>
-const DATA = [
+const UNIDADES = [
   {"regional":"Douglas Xavier","volume_fase1":20,"unidade":"BP ABC PAULISTA","tipo":"BP","termometro":"Crítico"},
   {"regional":"Lucas Eduardo","volume_fase1":20,"unidade":"BP ALPHAVILLE","tipo":"BP","termometro":"Atenção"},
   {"regional":"Marden Chaves","volume_fase1":17,"unidade":"BP BH PAMPULHA","tipo":"BP","termometro":"Atenção"},
@@ -405,35 +791,47 @@ const DATA = [
   {"regional":"Daniela Dias","volume_fase1":24,"unidade":"INSIDE SALES","tipo":"Filial","termometro":"Atenção"}
 ];
 
-let state = { tipo:'todos', therm:'todos', regional:null, search:'', sortKey:'volume_fase1', sortDir:'desc' };
+const API_URL = "https://script.google.com/macros/s/AKfycbwdvdbonMqVPNnUNvx8vSvsNcDb_GVqk8DQG93evoJHzwXsZ86x_oG0FwswtqGuedo6/exec";
 
-const maxVol = Math.max(...DATA.map(d=>d.volume_fase1));
+let TASKS = [];
 
-function applyFilters(){
-  return DATA.filter(d=>{
-    if(state.tipo!=='todos' && d.tipo!==state.tipo) return false;
-    if(state.therm!=='todos' && d.termometro!==state.therm) return false;
-    if(state.regional && d.regional!==state.regional) return false;
-    if(state.search){
-      const s = state.search.toLowerCase();
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-'+btn.getAttribute('data-view')).classList.add('active');
+  });
+});
+
+let stateExec = { tipo:'todos', therm:'todos', regional:null, search:'', sortKey:'volume_fase1', sortDir:'desc' };
+const maxVol = Math.max(...UNIDADES.map(d=>d.volume_fase1));
+
+function applyFiltersExec(){
+  return UNIDADES.filter(d=>{
+    if(stateExec.tipo!=='todos' && d.tipo!==stateExec.tipo) return false;
+    if(stateExec.therm!=='todos' && d.termometro!==stateExec.therm) return false;
+    if(stateExec.regional && d.regional!==stateExec.regional) return false;
+    if(stateExec.search){
+      const s = stateExec.search.toLowerCase();
       if(!d.unidade.toLowerCase().includes(s) && !d.regional.toLowerCase().includes(s)) return false;
     }
     return true;
   });
 }
 
-function sortData(arr){
-  const dir = state.sortDir==='asc'?1:-1;
+function sortGeneric(arr, key, dir){
+  const d = dir==='asc'?1:-1;
   return [...arr].sort((a,b)=>{
-    let va=a[state.sortKey], vb=b[state.sortKey];
-    if(typeof va === 'string'){ va=va.toLowerCase(); vb=vb.toLowerCase(); }
-    if(va<vb) return -1*dir;
-    if(va>vb) return 1*dir;
+    let va=a[key], vb=b[key];
+    if(typeof va === 'string'){ va=va.toLowerCase(); vb=(vb||'').toLowerCase(); }
+    if(va<vb) return -1*d;
+    if(va>vb) return 1*d;
     return 0;
   });
 }
 
-function renderKPIs(filtered){
+function renderKPIsExec(filtered){
   const total = filtered.length;
   const volTotal = filtered.reduce((s,d)=>s+d.volume_fase1,0);
   const crit = filtered.filter(d=>d.termometro==='Crítico').length;
@@ -448,7 +846,7 @@ function renderKPIs(filtered){
     {label:'Saudáveis', value:saud, sub: total? Math.round(saud/total*100)+'% do total' : '—', cls:'saud'},
   ];
 
-  document.getElementById('kpiRow').innerHTML = kpis.map(k=>`
+  document.getElementById('kpiRowExec').innerHTML = kpis.map(k=>`
     <div class="kpi ${k.cls}">
       <div class="kpi-label">${k.label}</div>
       <div class="kpi-value">${k.value}</div>
@@ -457,17 +855,17 @@ function renderKPIs(filtered){
   `).join('');
 }
 
-function renderSidebar(){
-  const regionais = [...new Set(DATA.map(d=>d.regional))].sort();
+function renderSidebarExec(){
+  const regionais = [...new Set(UNIDADES.map(d=>d.regional))].sort();
   const html = regionais.map(r=>{
-    const units = DATA.filter(d=>d.regional===r);
+    const units = UNIDADES.filter(d=>d.regional===r);
     const counts = {Crítico:0, Atenção:0, Saudável:0};
     units.forEach(u=>counts[u.termometro]++);
     const dotColors = {Crítico:'var(--red)', Atenção:'var(--amber)', Saudável:'var(--green)'};
     const dots = Object.entries(counts).filter(([,c])=>c>0).map(([k,c])=>
       Array(c).fill(`<span class="dot" style="background:${dotColors[k]}"></span>`).join('')
     ).join('');
-    const active = state.regional===r ? 'active':'';
+    const active = stateExec.regional===r ? 'active':'';
     return `<div class="reg-item ${active}" data-regional="${r}" tabindex="0">
       <div>
         <div class="reg-name">${r}</div>
@@ -476,21 +874,21 @@ function renderSidebar(){
       <div class="reg-count">${units.length}</div>
     </div>`;
   }).join('');
-  document.getElementById('regionalList').innerHTML = html;
+  document.getElementById('regionalListExec').innerHTML = html;
 
-  document.querySelectorAll('.reg-item').forEach(el=>{
+  document.querySelectorAll('#regionalListExec .reg-item').forEach(el=>{
     el.addEventListener('click', ()=>{
       const r = el.getAttribute('data-regional');
-      state.regional = state.regional===r ? null : r;
-      renderAll();
+      stateExec.regional = stateExec.regional===r ? null : r;
+      renderAllExec();
     });
   });
 }
 
-function renderTable(filtered){
-  const sorted = sortData(filtered);
-  const tbody = document.getElementById('tableBody');
-  const empty = document.getElementById('emptyState');
+function renderTableExec(filtered){
+  const sorted = sortGeneric(filtered, stateExec.sortKey, stateExec.sortDir);
+  const tbody = document.getElementById('tableBodyExec');
+  const empty = document.getElementById('emptyStateExec');
 
   if(sorted.length===0){
     tbody.innerHTML='';
@@ -517,50 +915,408 @@ function renderTable(filtered){
   }).join('');
 }
 
-function renderAll(){
-  const filtered = applyFilters();
-  renderKPIs(filtered);
-  renderSidebar();
-  renderTable(filtered);
+function renderAllExec(){
+  const filtered = applyFiltersExec();
+  renderKPIsExec(filtered);
+  renderSidebarExec();
+  renderTableExec(filtered);
 }
 
-document.getElementById('searchInput').addEventListener('input', e=>{
-  state.search = e.target.value;
-  renderAll();
+document.getElementById('searchInputExec').addEventListener('input', e=>{
+  stateExec.search = e.target.value;
+  renderAllExec();
 });
-
-document.querySelectorAll('#tipoFilter .filter-btn').forEach(btn=>{
+document.querySelectorAll('#tipoFilterExec .filter-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
-    document.querySelectorAll('#tipoFilter .filter-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('#tipoFilterExec .filter-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    state.tipo = btn.getAttribute('data-tipo');
-    renderAll();
+    stateExec.tipo = btn.getAttribute('data-tipo');
+    renderAllExec();
   });
 });
-
-document.querySelectorAll('#thermFilter .filter-btn').forEach(btn=>{
+document.querySelectorAll('#thermFilterExec .filter-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
-    document.querySelectorAll('#thermFilter .filter-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('#thermFilterExec .filter-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    state.therm = btn.getAttribute('data-therm');
-    renderAll();
+    stateExec.therm = btn.getAttribute('data-therm');
+    renderAllExec();
   });
 });
-
-document.querySelectorAll('thead th[data-sort]').forEach(th=>{
+document.querySelectorAll('#view-executivo thead th[data-sort]').forEach(th=>{
   th.addEventListener('click', ()=>{
     const key = th.getAttribute('data-sort');
-    if(state.sortKey===key){
-      state.sortDir = state.sortDir==='asc' ? 'desc':'asc';
-    } else {
-      state.sortKey = key;
-      state.sortDir = 'desc';
-    }
-    renderAll();
+    if(stateExec.sortKey===key){ stateExec.sortDir = stateExec.sortDir==='asc' ? 'desc':'asc'; }
+    else { stateExec.sortKey = key; stateExec.sortDir = 'desc'; }
+    renderAllExec();
   });
 });
 
-renderAll();
+let stateTask = { status:'todos', regional:null, search:'', sortKey:'prazo', sortDir:'asc' };
+const REGIONAIS = [...new Set(UNIDADES.map(d=>d.regional))].sort();
+
+function getUnidadesPorRegional(regional){
+  return UNIDADES.filter(u=>u.regional===regional);
+}
+
+function diasParaPrazo(prazoStr){
+  if(!prazoStr) return null;
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const prazo = new Date(prazoStr); prazo.setHours(0,0,0,0);
+  return Math.round((prazo - hoje) / (1000*60*60*24));
+}
+
+function statusEfetivo(t){
+  if(t.status === 'Concluída') return 'Concluída';
+  const dias = diasParaPrazo(t.prazo);
+  if(dias !== null && dias < 0) return 'Atrasada';
+  return t.status || 'Pendente';
+}
+
+async function fetchTasks(){
+  const syncDot = document.getElementById('syncDot');
+  const syncText = document.getElementById('syncText');
+  if(API_URL.includes('COLE_AQUI')){
+    syncDot.classList.add('offline');
+    syncText.textContent = 'API não configurada ainda — conecte a URL do Apps Script no código.';
+    TASKS = [];
+    renderAllTasks();
+    return;
+  }
+  try{
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    if(data.ok){
+      TASKS = data.tasks;
+      syncDot.classList.remove('offline');
+      syncText.textContent = 'Conectado à planilha · ' + TASKS.length + ' tarefa(s)';
+    } else {
+      throw new Error(data.error || 'Erro ao carregar');
+    }
+  } catch(err){
+    syncDot.classList.add('offline');
+    syncText.textContent = 'Não foi possível conectar à planilha. Verifique a URL da API.';
+  }
+  renderAllTasks();
+}
+
+async function saveTaskAPI(task, isEdit){
+  if(API_URL.includes('COLE_AQUI')){
+    showToast('Configure a URL da API antes de salvar.', true);
+    return false;
+  }
+  try{
+    const res = await fetch(API_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({ action: isEdit ? 'update':'create', task })
+    });
+    const data = await res.json();
+    return data.ok;
+  } catch(err){
+    return false;
+  }
+}
+
+async function deleteTaskAPI(id){
+  if(API_URL.includes('COLE_AQUI')) return false;
+  try{
+    const res = await fetch(API_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({ action:'delete', id })
+    });
+    const data = await res.json();
+    return data.ok;
+  } catch(err){
+    return false;
+  }
+}
+
+function applyFiltersTask(){
+  return TASKS.filter(t=>{
+    const st = statusEfetivo(t);
+    if(stateTask.status!=='todos' && st!==stateTask.status) return false;
+    if(stateTask.regional && t.regional!==stateTask.regional) return false;
+    if(stateTask.search){
+      const s = stateTask.search.toLowerCase();
+      const blob = (t.descricao+' '+t.unidade+' '+t.responsavel).toLowerCase();
+      if(!blob.includes(s)) return false;
+    }
+    return true;
+  });
+}
+
+function renderKPIsTask(){
+  const total = TASKS.length;
+  const withStatus = TASKS.map(t=>statusEfetivo(t));
+  const pend = withStatus.filter(s=>s==='Pendente').length;
+  const andamento = withStatus.filter(s=>s==='EmAndamento').length;
+  const concl = withStatus.filter(s=>s==='Concluída').length;
+  const atrasada = withStatus.filter(s=>s==='Atrasada').length;
+
+  const kpis = [
+    {label:'Total de tarefas', value:total, sub:'cadastradas no sistema', cls:''},
+    {label:'Pendentes', value:pend, sub:'aguardando início', cls:''},
+    {label:'Em andamento', value:andamento, sub:'em execução', cls:'att'},
+    {label:'Atrasadas', value:atrasada, sub:'prazo vencido', cls:'crit'},
+    {label:'Concluídas', value:concl, sub: total? Math.round(concl/total*100)+'% do total' : '—', cls:'saud'},
+  ];
+  document.getElementById('kpiRowTask').innerHTML = kpis.map(k=>`
+    <div class="kpi ${k.cls}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>
+  `).join('');
+}
+
+function renderSidebarTask(){
+  const html = REGIONAIS.map(r=>{
+    const count = TASKS.filter(t=>t.regional===r).length;
+    const active = stateTask.regional===r ? 'active':'';
+    return `<div class="reg-item ${active}" data-regional="${r}" tabindex="0">
+      <div class="reg-name">${r}</div>
+      <div class="reg-count">${count}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('regionalListTask').innerHTML = html;
+
+  document.querySelectorAll('#regionalListTask .reg-item').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const r = el.getAttribute('data-regional');
+      stateTask.regional = stateTask.regional===r ? null : r;
+      renderAllTasks();
+    });
+  });
+}
+
+function formatDateBR(iso){
+  if(!iso) return '—';
+  const parts = String(iso).split('T')[0].split('-');
+  if(parts.length!==3) return iso;
+  const [y,m,d] = parts;
+  return `${d}/${m}/${y}`;
+}
+
+function renderTableTask(filtered){
+  const sorted = sortGeneric(filtered, stateTask.sortKey, stateTask.sortDir);
+  const tbody = document.getElementById('tableBodyTask');
+  const empty = document.getElementById('emptyStateTask');
+
+  if(sorted.length===0){
+    tbody.innerHTML='';
+    empty.style.display='block';
+    return;
+  }
+  empty.style.display='none';
+
+  tbody.innerHTML = sorted.map(t=>{
+    const st = statusEfetivo(t);
+    const dias = diasParaPrazo(t.prazo);
+    let dueClass = '';
+    if(st!=='Concluída'){
+      if(dias!==null && dias<0) dueClass='due-late';
+      else if(dias!==null && dias<=3) dueClass='due-soon';
+    }
+    return `<tr>
+      <td>${t.descricao}</td>
+      <td>${t.unidade}</td>
+      <td>${t.regional}</td>
+      <td>${t.responsavel}</td>
+      <td class="due-date ${dueClass}">${formatDateBR(t.prazo)}</td>
+      <td>
+        <select class="status-select" data-id="${t.id}">
+          <option value="Pendente" ${t.status==='Pendente'?'selected':''}>Pendente</option>
+          <option value="EmAndamento" ${t.status==='EmAndamento'?'selected':''}>Em andamento</option>
+          <option value="Concluída" ${t.status==='Concluída'?'selected':''}>Concluída</option>
+        </select>
+      </td>
+      <td>
+        <div class="row-actions">
+          <button class="icon-btn" data-edit="${t.id}" title="Editar">✎</button>
+          <button class="icon-btn danger" data-delete="${t.id}" title="Excluir">✕</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('.status-select').forEach(sel=>{
+    sel.addEventListener('change', async (e)=>{
+      const id = e.target.getAttribute('data-id');
+      const task = TASKS.find(t=>t.id===id);
+      task.status = e.target.value;
+      const ok = await saveTaskAPI(task, true);
+      if(ok){ showToast('Status atualizado.'); fetchTasks(); }
+      else { showToast('Erro ao atualizar status.', true); }
+    });
+  });
+  tbody.querySelectorAll('[data-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>openModal(TASKS.find(t=>t.id===btn.getAttribute('data-edit'))));
+  });
+  tbody.querySelectorAll('[data-delete]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if(!confirm('Tem certeza que deseja excluir essa tarefa?')) return;
+      const ok = await deleteTaskAPI(btn.getAttribute('data-delete'));
+      if(ok){ showToast('Tarefa excluída.'); fetchTasks(); }
+      else { showToast('Erro ao excluir tarefa.', true); }
+    });
+  });
+}
+
+function renderAllTasks(){
+  const filtered = applyFiltersTask();
+  renderKPIsTask();
+  renderSidebarTask();
+  renderTableTask(filtered);
+}
+
+document.getElementById('searchInputTask').addEventListener('input', e=>{
+  stateTask.search = e.target.value;
+  renderAllTasks();
+});
+document.querySelectorAll('#statusFilterTask .filter-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#statusFilterTask .filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    stateTask.status = btn.getAttribute('data-status');
+    renderAllTasks();
+  });
+});
+document.querySelectorAll('#view-tarefas thead th[data-sort]').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.getAttribute('data-sort');
+    if(stateTask.sortKey===key){ stateTask.sortDir = stateTask.sortDir==='asc' ? 'desc':'asc'; }
+    else { stateTask.sortKey = key; stateTask.sortDir = 'asc'; }
+    renderAllTasks();
+  });
+});
+
+const modalOverlay = document.getElementById('modalOverlay');
+const taskRegionalSel = document.getElementById('taskRegional');
+const taskUnidadeSel = document.getElementById('taskUnidade');
+
+function populateRegionalSelect(){
+  taskRegionalSel.innerHTML = '<option value="">Selecione...</option>' +
+    REGIONAIS.map(r=>`<option value="${r}">${r}</option>`).join('');
+}
+
+function populateUnidadeSelect(regional){
+  if(!regional){
+    taskUnidadeSel.innerHTML = '<option value="">Selecione a regional primeiro</option>';
+    return;
+  }
+  const unidades = getUnidadesPorRegional(regional);
+  taskUnidadeSel.innerHTML = unidades.map(u=>
+    `<option value="${u.unidade}" data-tipo="${u.tipo}">${u.unidade} (${u.tipo})</option>`
+  ).join('');
+}
+
+taskRegionalSel.addEventListener('change', ()=>{
+  populateUnidadeSelect(taskRegionalSel.value);
+});
+
+function openModal(task){
+  populateRegionalSelect();
+  document.getElementById('modalTitle').textContent = task ? 'Editar tarefa' : 'Incluir tarefa';
+  document.getElementById('taskId').value = task ? task.id : '';
+  taskRegionalSel.value = task ? task.regional : '';
+  populateUnidadeSelect(taskRegionalSel.value);
+  if(task) taskUnidadeSel.value = task.unidade;
+  document.getElementById('taskDescricao').value = task ? task.descricao : '';
+  document.getElementById('taskResponsavel').value = task ? task.responsavel : '';
+  document.getElementById('taskPrazo').value = task ? String(task.prazo).split('T')[0] : '';
+  document.getElementById('taskStatus').value = task ? task.status : 'Pendente';
+  modalOverlay.classList.add('open');
+}
+
+function closeModal(){
+  modalOverlay.classList.remove('open');
+  document.getElementById('taskForm').reset();
+}
+
+document.getElementById('btnNovaTarefa').addEventListener('click', ()=>openModal(null));
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('btnCancelModal').addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', (e)=>{ if(e.target===modalOverlay) closeModal(); });
+
+document.getElementById('btnSaveTask').addEventListener('click', async ()=>{
+  const form = document.getElementById('taskForm');
+  if(!form.checkValidity()){ form.reportValidity(); return; }
+
+  const id = document.getElementById('taskId').value;
+  const regional = taskRegionalSel.value;
+  const unidade = taskUnidadeSel.value;
+  const tipoOpt = taskUnidadeSel.options[taskUnidadeSel.selectedIndex];
+  const tipo = tipoOpt ? tipoOpt.getAttribute('data-tipo') : '';
+
+  const task = {
+    id: id || undefined,
+    regional,
+    unidade,
+    tipo,
+    descricao: document.getElementById('taskDescricao').value.trim(),
+    responsavel: document.getElementById('taskResponsavel').value.trim(),
+    prazo: document.getElementById('taskPrazo').value,
+    status: document.getElementById('taskStatus').value
+  };
+
+  const ok = await saveTaskAPI(task, !!id);
+  if(ok){
+    showToast(id ? 'Tarefa atualizada.' : 'Tarefa incluída.');
+    closeModal();
+    fetchTasks();
+  } else {
+    showToast('Erro ao salvar tarefa. Verifique a conexão com a planilha.', true);
+  }
+});
+
+function showToast(msg, isError){
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.toggle('error', !!isError);
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'), 3200);
+}
+
+renderAllExec();
+fetchTasks();
+
+/* ============ VERSIONAMENTO E DATA DE ATUALIZAÇÃO ============ */
+const APP_VERSION = "1.00";
+const LAST_UPDATE = "2026-06-18T10:47:00";
+
+function formatUpdatePill(iso){
+  const d = new Date(iso);
+  const dia = d.getDate();
+  const meses = ['jan.','fev.','mar.','abr.','mai.','jun.','jul.','ago.','set.','out.','nov.','dez.'];
+  const mes = meses[d.getMonth()];
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  return `atualizado ${dia} de ${mes}, ${hh}:${mm}`;
+}
+
+document.getElementById('lastUpdatePill').textContent = formatUpdatePill(LAST_UPDATE);
+document.getElementById('versionPill').textContent = 'v' + APP_VERSION;
+
+/* ============ TEMA CLARO/ESCURO ============ */
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  try{ localStorage.setItem('gestaoUnidadesTheme', theme); }catch(e){}
+}
+
+function initTheme(){
+  let saved = null;
+  try{ saved = localStorage.getItem('gestaoUnidadesTheme'); }catch(e){}
+  const theme = saved || 'light';
+  applyTheme(theme);
+}
+
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(current === 'light' ? 'dark' : 'light');
+});
+
+initTheme();
 </script>
 
 </body>
