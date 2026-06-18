@@ -165,6 +165,7 @@
     padding:22px 36px;
     margin-top:-4px;
   }
+  #kpiRowTask{grid-template-columns:repeat(6,1fr);}
   .kpi{
     background:var(--card);
     border-radius:10px;
@@ -454,6 +455,13 @@
   }
   .icon-btn:hover{background:var(--ice);}
   .icon-btn.danger:hover{background:#FDECEC; border-color:var(--red);}
+  .icon-btn:disabled, .status-select:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+  }
+  .icon-btn:disabled:hover{background:transparent;}
+  tr.row-cancelled{opacity:.55;}
+  tr.row-cancelled td:first-child{text-decoration:line-through;}
 
   /* MODAL */
   .modal-overlay{
@@ -573,6 +581,7 @@
   @media (max-width: 880px){
     .main-grid{grid-template-columns:1fr;}
     .kpis{grid-template-columns:repeat(2,1fr);}
+    #kpiRowTask{grid-template-columns:repeat(2,1fr);}
     .header-meta{text-align:left;}
     .field-row{grid-template-columns:1fr;}
   }
@@ -667,6 +676,7 @@
       <button class="filter-btn" data-status="Pendente">Pendente</button>
       <button class="filter-btn" data-status="EmAndamento">Em andamento</button>
       <button class="filter-btn" data-status="Concluída">Concluída</button>
+      <button class="filter-btn" data-status="Cancelada">Cancelada</button>
       <button class="filter-btn" data-status="Atrasada">Atrasada</button>
     </div>
     <button class="btn-primary" id="btnNovaTarefa">+ Incluir tarefa</button>
@@ -741,6 +751,7 @@
             <option value="Pendente">Pendente</option>
             <option value="EmAndamento">Em andamento</option>
             <option value="Concluída">Concluída</option>
+            <option value="Cancelada">Cancelada</option>
           </select>
         </div>
       </form>
@@ -967,6 +978,7 @@ function diasParaPrazo(prazoStr){
 
 function statusEfetivo(t){
   if(t.status === 'Concluída') return 'Concluída';
+  if(t.status === 'Cancelada') return 'Cancelada';
   const dias = diasParaPrazo(t.prazo);
   if(dias !== null && dias < 0) return 'Atrasada';
   return t.status || 'Pendente';
@@ -1017,19 +1029,10 @@ async function saveTaskAPI(task, isEdit){
   }
 }
 
-async function deleteTaskAPI(id){
+async function cancelTaskAPI(task){
   if(API_URL.includes('COLE_AQUI')) return false;
-  try{
-    const res = await fetch(API_URL, {
-      method:'POST',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({ action:'delete', id })
-    });
-    const data = await res.json();
-    return data.ok;
-  } catch(err){
-    return false;
-  }
+  task.status = 'Cancelada';
+  return await saveTaskAPI(task, true);
 }
 
 function applyFiltersTask(){
@@ -1053,6 +1056,7 @@ function renderKPIsTask(){
   const andamento = withStatus.filter(s=>s==='EmAndamento').length;
   const concl = withStatus.filter(s=>s==='Concluída').length;
   const atrasada = withStatus.filter(s=>s==='Atrasada').length;
+  const cancelada = withStatus.filter(s=>s==='Cancelada').length;
 
   const kpis = [
     {label:'Total de tarefas', value:total, sub:'cadastradas no sistema', cls:''},
@@ -1060,6 +1064,7 @@ function renderKPIsTask(){
     {label:'Em andamento', value:andamento, sub:'em execução', cls:'att'},
     {label:'Atrasadas', value:atrasada, sub:'prazo vencido', cls:'crit'},
     {label:'Concluídas', value:concl, sub: total? Math.round(concl/total*100)+'% do total' : '—', cls:'saud'},
+    {label:'Canceladas', value:cancelada, sub:'fora do radar ativo', cls:''},
   ];
   document.getElementById('kpiRowTask').innerHTML = kpis.map(k=>`
     <div class="kpi ${k.cls}">
@@ -1114,27 +1119,33 @@ function renderTableTask(filtered){
     const st = statusEfetivo(t);
     const dias = diasParaPrazo(t.prazo);
     let dueClass = '';
-    if(st!=='Concluída'){
+    if(st!=='Concluída' && st!=='Cancelada'){
       if(dias!==null && dias<0) dueClass='due-late';
       else if(dias!==null && dias<=3) dueClass='due-soon';
     }
-    return `<tr>
+    const isLocked = st==='Cancelada';
+    const rowClass = isLocked ? 'row-cancelled' : '';
+    const actionBtn = isLocked
+      ? `<button class="icon-btn" disabled title="Tarefa cancelada">✕</button>`
+      : `<button class="icon-btn danger" data-cancel="${t.id}" title="Cancelar tarefa">✕</button>`;
+    return `<tr class="${rowClass}">
       <td>${t.descricao}</td>
       <td>${t.unidade}</td>
       <td>${t.regional}</td>
       <td>${t.responsavel}</td>
       <td class="due-date ${dueClass}">${formatDateBR(t.prazo)}</td>
       <td>
-        <select class="status-select" data-id="${t.id}">
+        <select class="status-select" data-id="${t.id}" ${isLocked?'disabled':''}>
           <option value="Pendente" ${t.status==='Pendente'?'selected':''}>Pendente</option>
           <option value="EmAndamento" ${t.status==='EmAndamento'?'selected':''}>Em andamento</option>
           <option value="Concluída" ${t.status==='Concluída'?'selected':''}>Concluída</option>
+          <option value="Cancelada" ${t.status==='Cancelada'?'selected':''}>Cancelada</option>
         </select>
       </td>
       <td>
         <div class="row-actions">
-          <button class="icon-btn" data-edit="${t.id}" title="Editar">✎</button>
-          <button class="icon-btn danger" data-delete="${t.id}" title="Excluir">✕</button>
+          <button class="icon-btn" data-edit="${t.id}" title="Editar" ${isLocked?'disabled':''}>✎</button>
+          ${actionBtn}
         </div>
       </td>
     </tr>`;
@@ -1153,12 +1164,13 @@ function renderTableTask(filtered){
   tbody.querySelectorAll('[data-edit]').forEach(btn=>{
     btn.addEventListener('click', ()=>openModal(TASKS.find(t=>t.id===btn.getAttribute('data-edit'))));
   });
-  tbody.querySelectorAll('[data-delete]').forEach(btn=>{
+  tbody.querySelectorAll('[data-cancel]').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
-      if(!confirm('Tem certeza que deseja excluir essa tarefa?')) return;
-      const ok = await deleteTaskAPI(btn.getAttribute('data-delete'));
-      if(ok){ showToast('Tarefa excluída.'); fetchTasks(); }
-      else { showToast('Erro ao excluir tarefa.', true); }
+      if(!confirm('Cancelar essa tarefa? Ela continuará no histórico, marcada como Cancelada, e não pode ser excluída.')) return;
+      const task = TASKS.find(t=>t.id===btn.getAttribute('data-cancel'));
+      const ok = await cancelTaskAPI(task);
+      if(ok){ showToast('Tarefa cancelada.'); fetchTasks(); }
+      else { showToast('Erro ao cancelar tarefa.', true); }
     });
   });
 }
