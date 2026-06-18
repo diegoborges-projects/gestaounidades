@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gestão de Unidades — Central de Projetos</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
   :root{
     --navy:#1E2761;
@@ -578,12 +579,69 @@
     color:var(--ink-soft);
   }
 
+  /* CUSTOMS PARA A NOVA GRID DE INDICADORES */
+  .grid-indicadores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 20px;
+    padding: 0 36px 36px;
+  }
+  .card-graph {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 22px;
+  }
+  .graph-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .graph-title-group h3 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--navy);
+  }
+  [data-theme="dark"] .graph-title-group h3 { color: #fff; }
+  .graph-title-group p {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .canvas-container {
+    position: relative;
+    height: 240px;
+    width: 100%;
+  }
+  .evolution-box {
+    margin-top: 16px;
+    font-size: 11.5px;
+    border-top: 1px dashed var(--line);
+    padding-top: 12px;
+    display: none;
+    line-height: 1.5;
+  }
+  .evolution-title {
+    font-weight: bold;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .evolution-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
   @media (max-width: 880px){
     .main-grid{grid-template-columns:1fr;}
     .kpis{grid-template-columns:repeat(2,1fr);}
     #kpiRowTask{grid-template-columns:repeat(2,1fr);}
     .header-meta{text-align:left;}
     .field-row{grid-template-columns:1fr;}
+    .grid-indicadores {grid-template-columns: 1fr;}
   }
 </style>
 </head>
@@ -610,6 +668,7 @@
   <div class="tabs">
     <button class="tab-btn active" data-view="executivo">Visão Executiva</button>
     <button class="tab-btn" data-view="tarefas">Controle de Tarefas</button>
+    <button class="tab-btn" data-view="indicadores">Visão de Indicadores</button>
   </div>
 </header>
 
@@ -709,6 +768,79 @@
 
   <footer>
     Dados de tarefas armazenados em planilha Google Sheets via Apps Script. Visível para todo o time da Central de Projetos.
+  </footer>
+</section>
+
+<section class="view" id="view-indicadores">
+  <div class="controls" style="padding-top: 22px; justify-content: space-between;">
+    <div>
+      <label class="pill" style="cursor: pointer; user-select: none; border: 1px solid var(--line); padding: 8px 16px;">
+        <input type="checkbox" id="checkEvolucao" style="margin-right: 6px; cursor: pointer;">
+        Mostrar percentual de evolução de um mês para outro (%)
+      </label>
+    </div>
+    <div style="font-size: 12px; color: var(--ink-soft); text-align: right;">
+      Origem dos Dados: Aba <strong>Indicadores</strong> da Planilha de Gestão
+    </div>
+  </div>
+
+  <div class="grid-indicadores">
+    
+    <div class="card-graph">
+      <div class="graph-header">
+        <div class="graph-title-group">
+          <h3>Churn das Unidades</h3>
+          <p>Meta: Máximo de 0,7% (Teto · Quanto menor, melhor)</p>
+        </div>
+        <div id="badgeChurn" class="tag">--</div>
+      </div>
+      <div class="canvas-container">
+        <canvas id="chartChurn"></canvas>
+      </div>
+      <div class="evolution-box" id="boxEvoChurn">
+        <div class="evolution-title">Evolução Mensal (MoM):</div>
+        <div class="evolution-list" id="listEvoChurn"></div>
+      </div>
+    </div>
+
+    <div class="card-graph">
+      <div class="graph-header">
+        <div class="graph-title-group">
+          <h3>Prazo até Go Live</h3>
+          <p>Meta: Mínimo de 50% (Piso · Quanto maior, melhor)</p>
+        </div>
+        <div id="badgeGoLive" class="tag">--</div>
+      </div>
+      <div class="canvas-container">
+        <canvas id="chartGoLive"></canvas>
+      </div>
+      <div class="evolution-box" id="boxEvoGoLive">
+        <div class="evolution-title">Evolução Mensal (MoM):</div>
+        <div class="evolution-list" id="listEvoGoLive"></div>
+      </div>
+    </div>
+
+    <div class="card-graph">
+      <div class="graph-header">
+        <div class="graph-title-group">
+          <h3>Satisfação (NPS / CSAT)</h3>
+          <p>Meta: Mínimo de 80 (Piso · Quanto maior, melhor)</p>
+        </div>
+        <div id="badgeSatis" class="tag">--</div>
+      </div>
+      <div class="canvas-container">
+        <canvas id="chartSatis"></canvas>
+      </div>
+      <div class="evolution-box" id="boxEvoSatis">
+        <div class="evolution-title">Evolução Mensal (MoM):</div>
+        <div class="evolution-list" id="listEvoSatis"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    Indicadores estratégicos consolidados. Atualizado automaticamente em conformidade com as metas corporativas.
   </footer>
 </section>
 
@@ -1326,9 +1458,171 @@ function initTheme(){
 document.getElementById('themeToggle').addEventListener('click', ()=>{
   const current = document.documentElement.getAttribute('data-theme') || 'light';
   applyTheme(current === 'light' ? 'dark' : 'light');
+  if(typeof updateChartsTheme === 'function') updateChartsTheme();
 });
 
 initTheme();
+
+/* ============ LÓGICA E CONEXÃO DA VISÃO DE INDICADORES ============ */
+const DATA_INDICADORES = {
+  meses: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
+  churn: {
+    valores: [0.80, 0.75, 0.65, 0.70, 0.60, 0.68],
+    meta: 0.70,
+    tipo: "menor"
+  },
+  golive: {
+    valores: [30, 45, 50, 48, 55, 60],
+    meta: 50,
+    tipo: "maior"
+  },
+  satisfacao: {
+    valores: [75, 78, 82, 80, 85, 84],
+    meta: 80,
+    tipo: "maior"
+  }
+};
+
+let chartChurnObj = null;
+let chartGoLiveObj = null;
+let chartSatisObj = null;
+
+function initIndicatorsCharts() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const colorText = isDark ? '#E7EAF3' : '#1A2238';
+  const colorGrid = isDark ? '#2B3247' : '#E3E8F2';
+
+  // Configuração padrão de fontes e layouts comuns
+  const baseOptions = (title, minVal, maxVal, isPercent) => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: colorText, font: { family: 'Arial', weight: 'bold', size: 11 } } },
+      tooltip: { callbacks: { label: (context) => `${context.dataset.label}: ${context.raw}${isPercent ? '%' : ''}` } }
+    },
+    scales: {
+      x: { grid: { color: colorGrid }, ticks: { color: colorText, font: { family: 'Arial' } } },
+      y: { grid: { color: colorGrid }, ticks: { color: colorText, font: { family: 'Arial' } }, min: minVal, max: maxVal }
+    }
+  });
+
+  // 1. Gráfico Churn
+  const ctxChurn = document.getElementById('chartChurn').getContext('2d');
+  chartChurnObj = new Chart(ctxChurn, {
+    type: 'line',
+    data: {
+      labels: DATA_INDICADORES.meses,
+      datasets: [
+        { label: 'Realizado (%)', data: DATA_INDICADORES.churn.valores, borderColor: '#1E2761', backgroundColor: 'rgba(30,39,97,0.08)', borderWidth: 3, tension: 0.25, pointRadius: 4, pointBackgroundColor: '#1E2761' },
+        { label: 'Meta (Teto Máx: 0.7%)', data: Array(6).fill(DATA_INDICADORES.churn.meta), borderColor: 'var(--red)', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, fill: false }
+      ]
+    },
+    options: baseOptions('Churn', 0, 1.2, true)
+  });
+
+  // 2. Gráfico Go Live
+  const ctxGoLive = document.getElementById('chartGoLive').getContext('2d');
+  chartGoLiveObj = new Chart(ctxGoLive, {
+    type: 'line',
+    data: {
+      labels: DATA_INDICADORES.meses,
+      datasets: [
+        { label: 'Realizado (%)', data: DATA_INDICADORES.golive.valores, borderColor: '#00B050', backgroundColor: 'rgba(0,176,80,0.08)', borderWidth: 3, tension: 0.25, pointRadius: 4, pointBackgroundColor: '#00B050' },
+        { label: 'Meta (Piso Mín: 50%)', data: Array(6).fill(DATA_INDICADORES.golive.meta), borderColor: 'var(--amber)', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, fill: false }
+      ]
+    },
+    options: baseOptions('Go Live', 0, 100, true)
+  });
+
+  // 3. Gráfico Satisfação
+  const ctxSatis = document.getElementById('chartSatis').getContext('2d');
+  chartSatisObj = new Chart(ctxSatis, {
+    type: 'line',
+    data: {
+      labels: DATA_INDICADORES.meses,
+      datasets: [
+        { label: 'Realizado pontuação', data: DATA_INDICADORES.satisfacao.valores, borderColor: '#F59E0B', backgroundColor: 'rgba(245,158,11,0.08)', borderWidth: 3, tension: 0.25, pointRadius: 4, pointBackgroundColor: '#F59E0B' },
+        { label: 'Meta (Piso Mín: 80)', data: Array(6).fill(DATA_INDICADORES.satisfacao.meta), borderColor: 'var(--navy)', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, fill: false }
+      ]
+    },
+    options: baseOptions('Satisfação', 0, 100, false)
+  });
+
+  processIndicatorsMetadata();
+}
+
+function updateChartsTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const colorText = isDark ? '#E7EAF3' : '#1A2238';
+  const colorGrid = isDark ? '#2B3247' : '#E3E8F2';
+
+  [chartChurnObj, chartGoLiveObj, chartSatisObj].forEach(chart => {
+    if(chart) {
+      chart.options.plugins.legend.labels.color = colorText;
+      chart.options.scales.x.grid.color = colorGrid;
+      chart.options.scales.x.ticks.color = colorText;
+      chart.options.scales.y.grid.color = colorGrid;
+      chart.options.scales.y.ticks.color = colorText;
+      chart.update();
+    }
+  });
+}
+
+function processIndicatorsMetadata() {
+  const m = DATA_INDICADORES.meses;
+
+  // Renderizador Genérico de Crachás de Status e Listas MoM
+  const processMetric = (key, badgeId, listId, isPercent) => {
+    const obj = DATA_INDICADORES[key];
+    const len = obj.valores.length;
+    const currentVal = obj.valores[len - 1];
+    
+    // Validar atingimento da meta atual (Junho)
+    const atingiu = obj.tipo === 'menor' ? (currentVal <= obj.meta) : (currentVal >= obj.meta);
+    const badge = document.getElementById(badgeId);
+    badge.textContent = `Junho: ${currentVal}${isPercent ? '%' : ''}`;
+    badge.className = `tag ${atingiu ? 'therm-Saudável' : 'therm-Crítico'}`;
+
+    // Calcular evolução dinâmica mês a mês
+    let htmlItems = [];
+    for(let i = 1; i < len; i++) {
+      const vAnterior = obj.valores[i - 1];
+      const vAtual = obj.valores[i];
+      const evolucao = ((vAtual - vAnterior) / vAnterior) * 100;
+      
+      // Regra de sucesso da evolução
+      let melhorou = obj.tipo === 'menor' ? (evolucao <= 0) : (evolucao >= 0);
+      if (evolucao === 0) melhorou = true;
+
+      const corSinal = melhorou ? 'var(--green)' : 'var(--red)';
+      const icone = melhorou ? '🟢' : '🔴';
+      const sinalStr = evolucao > 0 ? '+' : '';
+
+      htmlItems.push(`
+        <span style="border: 1px solid var(--line); padding: 4px 8px; border-radius: 6px; background: var(--bg); display: inline-block;">
+          <strong>${m[i-1]} → ${m[i]}:</strong> 
+          <span style="color: ${corSinal}; font-weight: bold;">${sinalStr}${evolucao.toFixed(1)}%</span> ${icone}
+        </span>
+      `);
+    }
+    document.getElementById(listId).innerHTML = htmlItems.join('');
+  };
+
+  processMetric('churn', 'badgeChurn', 'listEvoChurn', true);
+  processMetric('golive', 'badgeGoLive', 'listEvoGoLive', true);
+  processMetric('satisfacao', 'badgeSatis', 'listEvoSatis', false);
+}
+
+// Ouvinte para o acionador de visualização da Evolução Mês a Mês
+document.getElementById('checkEvolucao').addEventListener('change', (e) => {
+  const boxes = document.querySelectorAll('.evolution-box');
+  boxes.forEach(box => box.style.display = e.target.checked ? 'block' : 'none');
+});
+
+// Inicialização segura dos componentes gráficos
+window.addEventListener('DOMContentLoaded', () => {
+  initIndicatorsCharts();
+});
 </script>
 
 </body>
