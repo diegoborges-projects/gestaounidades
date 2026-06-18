@@ -203,7 +203,59 @@
   .ms-option input{cursor:pointer;}
   .ms-divider{border-top:1px solid var(--line);margin:6px 0;}
 
-  /* SYNC + TOAST */
+  /* PRIORIDADE */
+  .prio-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:bold;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+  .prio-Urgente{background:#FDECEC;color:var(--red);}
+  .prio-Alta{background:#FEF3E0;color:#B9790A;}
+  .prio-Média{background:#EFF1F6;color:#1D4ED8;}
+  .prio-Sem{background:#F4F6FB;color:var(--ink-soft);}
+  [data-theme="dark"] .prio-Urgente{background:#3A1313;}
+  [data-theme="dark"] .prio-Alta{background:#2E2200;}
+  [data-theme="dark"] .prio-Média{background:#1A2240;}
+  [data-theme="dark"] .prio-Sem{background:#1A2030;}
+
+  /* TOGGLE LISTA / KANBAN */
+  .view-toggle{display:flex;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:3px;gap:3px;}
+  .view-toggle-btn{border:none;background:transparent;padding:6px 12px;font-size:12px;font-weight:bold;border-radius:6px;cursor:pointer;color:var(--ink-soft);font-family:Arial,sans-serif;display:flex;align-items:center;gap:5px;}
+  .view-toggle-btn.active{background:var(--navy);color:#fff;}
+
+  /* KANBAN */
+  .kanban-board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:0 36px 36px;min-height:500px;}
+  .kanban-col{background:var(--bg);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;min-height:400px;}
+  .kanban-col-header{padding:12px 14px 10px;border-radius:10px 10px 0 0;display:flex;justify-content:space-between;align-items:center;}
+  .kanban-col-title{font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:.06em;}
+  .kanban-col-count{font-size:11px;font-weight:bold;background:rgba(0,0,0,.1);padding:2px 8px;border-radius:20px;}
+  .kanban-col[data-col="Pendente"] .kanban-col-header{background:#EFF1F6;}
+  .kanban-col[data-col="EmAndamento"] .kanban-col-header{background:#E6EEFD;}
+  .kanban-col[data-col="Concluída"] .kanban-col-header{background:#E6F7EC;}
+  .kanban-col[data-col="Cancelada"] .kanban-col-header{background:#F5F5F5;}
+  .kanban-col[data-col="Pendente"] .kanban-col-title{color:var(--ink-soft);}
+  .kanban-col[data-col="EmAndamento"] .kanban-col-title{color:#1D4ED8;}
+  .kanban-col[data-col="Concluída"] .kanban-col-title{color:#0A7C3E;}
+  .kanban-col[data-col="Cancelada"] .kanban-col-title{color:var(--ink-soft);}
+  [data-theme="dark"] .kanban-col[data-col="Pendente"] .kanban-col-header{background:#1E2235;}
+  [data-theme="dark"] .kanban-col[data-col="EmAndamento"] .kanban-col-header{background:#151E35;}
+  [data-theme="dark"] .kanban-col[data-col="Concluída"] .kanban-col-header{background:#122218;}
+  [data-theme="dark"] .kanban-col[data-col="Cancelada"] .kanban-col-header{background:#1A1A1A;}
+  .kanban-cards{padding:10px;display:flex;flex-direction:column;gap:8px;flex:1;transition:background .15s;}
+  .kanban-cards.drag-over{background:rgba(30,39,97,.06);border-radius:0 0 10px 10px;}
+  .kanban-card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;cursor:grab;transition:box-shadow .15s, opacity .15s;user-select:none;}
+  .kanban-card:active{cursor:grabbing;}
+  .kanban-card.dragging{opacity:.4;box-shadow:0 8px 24px rgba(0,0,0,.2);}
+  .kanban-card.cancelled{opacity:.5;}
+  .kanban-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:7px;}
+  .kanban-card-desc{font-size:12.5px;font-weight:bold;color:var(--ink);line-height:1.35;flex:1;}
+  .kanban-card-meta{display:flex;flex-direction:column;gap:4px;margin-top:4px;}
+  .kanban-meta-row{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-soft);}
+  .kanban-meta-row strong{color:var(--ink);}
+  .kanban-due{font-size:11px;font-weight:bold;}
+  .kanban-due.late{color:var(--red);}
+  .kanban-due.soon{color:var(--amber);}
+  .kanban-due.ok{color:var(--ink-soft);}
+  .kanban-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--line);}
+  .kanban-edit-btn{background:transparent;border:none;cursor:pointer;font-size:12px;color:var(--ink-soft);padding:0;}
+  .kanban-edit-btn:hover{color:var(--navy);}
+  @media(max-width:880px){.kanban-board{grid-template-columns:1fr 1fr;}}
   .sync-status{font-size:11.5px;color:var(--ink-soft);display:flex;align-items:center;gap:6px;padding:0 36px 10px;}
   .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
   .sync-dot.offline{background:var(--amber);}
@@ -297,23 +349,62 @@
       <button class="filter-btn" data-status="Concluída">Concluída</button>
       <button class="filter-btn" data-status="Cancelada">Cancelada</button>
     </div>
+    <div class="filter-group" id="prioFilterTask">
+      <button class="filter-btn active" data-prio="todos">Todas</button>
+      <button class="filter-btn" data-prio="Urgente">Urgente</button>
+      <button class="filter-btn" data-prio="Alta">Alta</button>
+      <button class="filter-btn" data-prio="Média">Média</button>
+      <button class="filter-btn" data-prio="Sem prioridade">Sem</button>
+    </div>
+    <div class="view-toggle">
+      <button class="view-toggle-btn active" id="btnViewLista" title="Visualização em lista">☰ Lista</button>
+      <button class="view-toggle-btn" id="btnViewKanban" title="Visualização Kanban">⊞ Kanban</button>
+    </div>
     <button class="btn-primary" id="btnNovaTarefa">+ Incluir tarefa</button>
   </div>
-  <div class="main-grid">
-    <aside class="sidebar"><h2>Regionais (GRP)</h2><div id="regionalListTask"></div></aside>
-    <div class="table-card">
-      <table><thead><tr>
-        <th data-sort="descricao">Tarefa <span class="arrow">↕</span></th>
-        <th data-sort="unidade">Unidade <span class="arrow">↕</span></th>
-        <th data-sort="regional">Regional <span class="arrow">↕</span></th>
-        <th data-sort="responsavel">Responsável <span class="arrow">↕</span></th>
-        <th data-sort="prazo">Prazo <span class="arrow">↕</span></th>
-        <th data-sort="status">Status <span class="arrow">↕</span></th>
-        <th class="no-sort">Ações</th>
-      </tr></thead><tbody id="tableBodyTask"></tbody></table>
-      <div class="empty-state" id="emptyStateTask" style="display:none;">Nenhuma tarefa cadastrada. Clique em "+ Incluir tarefa".</div>
+
+  <!-- LISTA -->
+  <div id="taskListView">
+    <div class="main-grid">
+      <aside class="sidebar"><h2>Regionais (GRP)</h2><div id="regionalListTask"></div></aside>
+      <div class="table-card">
+        <table><thead><tr>
+          <th data-sort="descricao">Tarefa <span class="arrow">↕</span></th>
+          <th data-sort="prioridade">Prioridade <span class="arrow">↕</span></th>
+          <th data-sort="unidade">Unidade <span class="arrow">↕</span></th>
+          <th data-sort="regional">Regional <span class="arrow">↕</span></th>
+          <th data-sort="responsavel">Responsável <span class="arrow">↕</span></th>
+          <th data-sort="prazo">Prazo <span class="arrow">↕</span></th>
+          <th data-sort="status">Status <span class="arrow">↕</span></th>
+          <th class="no-sort">Ações</th>
+        </tr></thead><tbody id="tableBodyTask"></tbody></table>
+        <div class="empty-state" id="emptyStateTask" style="display:none;">Nenhuma tarefa cadastrada. Clique em "+ Incluir tarefa".</div>
+      </div>
     </div>
   </div>
+
+  <!-- KANBAN -->
+  <div id="taskKanbanView" style="display:none;">
+    <div class="kanban-board">
+      <div class="kanban-col" data-col="Pendente">
+        <div class="kanban-col-header"><span class="kanban-col-title">Pendente</span><span class="kanban-col-count" id="kcount-Pendente">0</span></div>
+        <div class="kanban-cards" id="kcol-Pendente" data-col="Pendente"></div>
+      </div>
+      <div class="kanban-col" data-col="EmAndamento">
+        <div class="kanban-col-header"><span class="kanban-col-title">Em andamento</span><span class="kanban-col-count" id="kcount-EmAndamento">0</span></div>
+        <div class="kanban-cards" id="kcol-EmAndamento" data-col="EmAndamento"></div>
+      </div>
+      <div class="kanban-col" data-col="Concluída">
+        <div class="kanban-col-header"><span class="kanban-col-title">Concluída</span><span class="kanban-col-count" id="kcount-Concluída">0</span></div>
+        <div class="kanban-cards" id="kcol-Concluída" data-col="Concluída"></div>
+      </div>
+      <div class="kanban-col" data-col="Cancelada">
+        <div class="kanban-col-header"><span class="kanban-col-title">Cancelada</span><span class="kanban-col-count" id="kcount-Cancelada">0</span></div>
+        <div class="kanban-cards" id="kcol-Cancelada" data-col="Cancelada"></div>
+      </div>
+    </div>
+  </div>
+
   <footer>Tarefas armazenadas em planilha Google Sheets via Apps Script. Dados em tempo real.</footer>
 </section>
 
@@ -356,13 +447,23 @@
           <div class="field"><label>Responsável <span class="required-mark">*</span></label><input type="text" id="taskResponsavel" required placeholder="Nome do responsável"></div>
           <div class="field"><label>Prazo <span class="required-mark">*</span></label><input type="date" id="taskPrazo" required></div>
         </div>
-        <div class="field"><label>Status</label>
-          <select id="taskStatus">
-            <option value="Pendente">Pendente</option>
-            <option value="EmAndamento">Em andamento</option>
-            <option value="Concluída">Concluída</option>
-            <option value="Cancelada">Cancelada</option>
-          </select>
+        <div class="field-row">
+          <div class="field"><label>Status</label>
+            <select id="taskStatus">
+              <option value="Pendente">Pendente</option>
+              <option value="EmAndamento">Em andamento</option>
+              <option value="Concluída">Concluída</option>
+              <option value="Cancelada">Cancelada</option>
+            </select>
+          </div>
+          <div class="field"><label>Prioridade</label>
+            <select id="taskPrioridade">
+              <option value="Urgente">🔴 Urgente</option>
+              <option value="Alta">🟠 Alta</option>
+              <option value="Média">🔵 Média</option>
+              <option value="Sem prioridade" selected>— Sem prioridade</option>
+            </select>
+          </div>
         </div>
       </form>
     </div>
@@ -380,8 +481,8 @@
    CONFIG
 ============================================================ */
 const API_URL = "https://script.google.com/macros/s/AKfycbyuseNweNzlrUESt70My4zJiUPpANC2SRqBgh-jdoN5937XmFqILbDRrqaSK02qfZQl/exec";
-const APP_VERSION = "3.00";
-const LAST_UPDATE = "2026-06-18T16:00:00";
+const APP_VERSION = "4.00";
+const LAST_UPDATE = "2026-06-18T18:00:00";
 
 const METAS_CONFIG = {
   'Churn':            { meta:0.7, direcao:'menor', formato:'decimal', sufixo:'%' },
@@ -592,7 +693,9 @@ document.querySelectorAll('#view-executivo thead th[data-sort]').forEach(th => t
 /* ============================================================
    VIEW 2: TAREFAS
 ============================================================ */
-let stateTask = { status:'todos', regional:null, search:'', sortKey:'prazo', sortDir:'asc' };
+let stateTask = { status:'todos', regional:null, search:'', sortKey:'prazo', sortDir:'asc', prioridade:'todos', viewMode:'lista' };
+const PRIO_ORDER = {'Urgente':0,'Alta':1,'Média':2,'Sem prioridade':3};
+const PRIO_LABEL = {'Urgente':'Urgente','Alta':'Alta','Média':'Média','Sem prioridade':'Sem prioridade'};
 
 async function saveTaskAPI(task, isEdit) {
   try {
@@ -615,12 +718,19 @@ function applyFiltersTask() {
     const st = statusEfetivo(t);
     if (stateTask.status !== 'todos' && st !== stateTask.status) return false;
     if (stateTask.regional && t.regional !== stateTask.regional) return false;
+    if (stateTask.prioridade !== 'todos' && (t.prioridade||'Sem prioridade') !== stateTask.prioridade) return false;
     if (stateTask.search) {
       const s = stateTask.search.toLowerCase();
       if (!((t.descricao+' '+t.unidade+' '+t.responsavel).toLowerCase().includes(s))) return false;
     }
     return true;
   });
+}
+
+function prioBadge(p) {
+  const v = p || 'Sem prioridade';
+  const key = v === 'Sem prioridade' ? 'Sem' : v;
+  return `<span class="prio-badge prio-${key}">${v}</span>`;
 }
 
 function renderAllTasks() {
@@ -635,7 +745,7 @@ function renderAllTasks() {
     {label:'Canceladas', value:ws.filter(s=>s==='Cancelada').length, sub:'fora do radar', cls:''},
   ].map(k=>`<div class="kpi ${k.cls}"><div class="kpi-label">${k.label}</div><div class="kpi-value">${k.value}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
 
-  // Sidebar regionais da aba GRP (não das tarefas, pra mostrar todos)
+  // Sidebar regionais
   const regionais = [...new Set(UNIDADES.map(d => d.regional))].sort();
   document.getElementById('regionalListTask').innerHTML = regionais.map(r => {
     const count = TASKS.filter(t => t.regional === r).length;
@@ -651,7 +761,14 @@ function renderAllTasks() {
     });
   });
 
-  // Tabela
+  if (stateTask.viewMode === 'kanban') {
+    renderKanban(filtered);
+  } else {
+    renderTableTask(filtered);
+  }
+}
+
+function renderTableTask(filtered) {
   const sorted = sortGeneric(filtered, stateTask.sortKey, stateTask.sortDir);
   const empty = document.getElementById('emptyStateTask');
   if (!sorted.length) { document.getElementById('tableBodyTask').innerHTML=''; empty.style.display='block'; return; }
@@ -662,7 +779,9 @@ function renderAllTasks() {
     const dueClass = st!=='Concluída'&&st!=='Cancelada' ? (dias<0?'due-late':dias<=3?'due-soon':'') : '';
     const isLocked = st==='Cancelada';
     return `<tr class="${isLocked?'row-cancelled':''}">
-      <td>${t.descricao}</td><td>${t.unidade}</td><td>${t.regional}</td><td>${t.responsavel}</td>
+      <td>${t.descricao}</td>
+      <td>${prioBadge(t.prioridade)}</td>
+      <td>${t.unidade}</td><td>${t.regional}</td><td>${t.responsavel}</td>
       <td class="due-date ${dueClass}">${formatDateBR(t.prazo)}</td>
       <td><select class="status-select" data-id="${t.id}" ${isLocked?'disabled':''}>
         <option value="Pendente" ${t.status==='Pendente'?'selected':''}>Pendente</option>
@@ -693,11 +812,92 @@ function renderAllTasks() {
   );
   document.getElementById('tableBodyTask').querySelectorAll('[data-cancel]').forEach(btn => {
     btn.addEventListener('click', async () => {
-      if (!confirm('Cancelar essa tarefa? Ela ficará no histórico como Cancelada e não pode ser excluída.')) return;
+      if (!confirm('Cancelar essa tarefa? Ela ficará no histórico como Cancelada.')) return;
       const task = TASKS.find(t => t.id === btn.getAttribute('data-cancel'));
       const ok = await cancelTaskAPI({...task});
       if (ok) { showToast('Tarefa cancelada.'); fetchAll(true); }
       else showToast('Erro ao cancelar.', true);
+    });
+  });
+}
+
+/* ---- KANBAN ---- */
+let dragId = null;
+
+function renderKanban(filtered) {
+  const cols = ['Pendente','EmAndamento','Concluída','Cancelada'];
+  // Ordena por prazo do mais antigo para o mais novo
+  const sorted = [...filtered].sort((a,b) => {
+    if (!a.prazo) return 1; if (!b.prazo) return -1;
+    return new Date(a.prazo) - new Date(b.prazo);
+  });
+
+  cols.forEach(col => {
+    const cards = sorted.filter(t => {
+      const st = statusEfetivo(t);
+      if (col === 'Cancelada') return st === 'Cancelada';
+      if (col === 'EmAndamento') return st === 'EmAndamento';
+      if (col === 'Concluída') return st === 'Concluída';
+      return st === 'Pendente' || st === 'Atrasada';
+    });
+    document.getElementById('kcount-' + col).textContent = cards.length;
+    const container = document.getElementById('kcol-' + col);
+    container.innerHTML = cards.map(t => {
+      const st = statusEfetivo(t);
+      const dias = diasParaPrazo(t.prazo);
+      const isLocked = st === 'Cancelada';
+      let dueLabel = '—', dueCls = 'ok';
+      if (t.prazo) {
+        dueLabel = formatDateBR(t.prazo);
+        if (dias < 0) dueCls = 'late';
+        else if (dias <= 3) dueCls = 'soon';
+      }
+      const prio = t.prioridade || 'Sem prioridade';
+      const prioKey = prio === 'Sem prioridade' ? 'Sem' : prio;
+      return `<div class="kanban-card ${isLocked?'cancelled':''}" draggable="${!isLocked}" data-id="${t.id}">
+        <div class="kanban-card-top">
+          <div class="kanban-card-desc">${t.descricao}</div>
+          <span class="prio-badge prio-${prioKey}" style="flex-shrink:0">${prio}</span>
+        </div>
+        <div class="kanban-card-meta">
+          <div class="kanban-meta-row"><strong>${t.unidade}</strong></div>
+          <div class="kanban-meta-row">${t.responsavel}</div>
+        </div>
+        <div class="kanban-card-footer">
+          <span class="kanban-due ${dueCls}">📅 ${dueLabel}</span>
+          ${!isLocked ? `<button class="kanban-edit-btn" data-edit="${t.id}" title="Editar">✎ editar</button>` : '<span></span>'}
+        </div>
+      </div>`;
+    }).join('') || `<div style="padding:20px;text-align:center;font-size:12px;color:var(--ink-soft);">Sem tarefas</div>`;
+
+    // Drag events nos cards
+    container.querySelectorAll('.kanban-card[draggable="true"]').forEach(card => {
+      card.addEventListener('dragstart', e => {
+        dragId = card.getAttribute('data-id');
+        setTimeout(() => card.classList.add('dragging'), 0);
+      });
+      card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    });
+    container.querySelectorAll('[data-edit]').forEach(btn =>
+      btn.addEventListener('click', () => openModal(TASKS.find(t => t.id === btn.getAttribute('data-edit'))))
+    );
+
+    // Drop zone
+    container.addEventListener('dragover', e => { e.preventDefault(); container.classList.add('drag-over'); });
+    container.addEventListener('dragleave', () => container.classList.remove('drag-over'));
+    container.addEventListener('drop', async e => {
+      e.preventDefault();
+      container.classList.remove('drag-over');
+      if (!dragId) return;
+      const newStatus = container.getAttribute('data-col');
+      const task = TASKS.find(t => t.id === dragId);
+      if (!task || task.status === newStatus) { dragId=null; return; }
+      if (task.status === 'Cancelada') { showToast('Tarefa cancelada não pode ser movida.', true); dragId=null; return; }
+      task.status = newStatus;
+      const ok = await saveTaskAPI({...task}, true);
+      dragId = null;
+      if (ok) { showToast('Status atualizado.'); fetchAll(true); }
+      else showToast('Erro ao mover tarefa.', true);
     });
   });
 }
@@ -707,11 +907,31 @@ document.querySelectorAll('#statusFilterTask .filter-btn').forEach(btn => btn.ad
   document.querySelectorAll('#statusFilterTask .filter-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active'); stateTask.status=btn.getAttribute('data-status'); renderAllTasks();
 }));
+document.querySelectorAll('#prioFilterTask .filter-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('#prioFilterTask .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); stateTask.prioridade=btn.getAttribute('data-prio'); renderAllTasks();
+}));
 document.querySelectorAll('#view-tarefas thead th[data-sort]').forEach(th => th.addEventListener('click', () => {
   const key = th.getAttribute('data-sort');
   stateTask.sortDir = stateTask.sortKey===key ? (stateTask.sortDir==='asc'?'desc':'asc') : 'asc';
   stateTask.sortKey = key; renderAllTasks();
 }));
+document.getElementById('btnViewLista').addEventListener('click', () => {
+  stateTask.viewMode = 'lista';
+  document.getElementById('btnViewLista').classList.add('active');
+  document.getElementById('btnViewKanban').classList.remove('active');
+  document.getElementById('taskListView').style.display = '';
+  document.getElementById('taskKanbanView').style.display = 'none';
+  renderAllTasks();
+});
+document.getElementById('btnViewKanban').addEventListener('click', () => {
+  stateTask.viewMode = 'kanban';
+  document.getElementById('btnViewKanban').classList.add('active');
+  document.getElementById('btnViewLista').classList.remove('active');
+  document.getElementById('taskListView').style.display = 'none';
+  document.getElementById('taskKanbanView').style.display = '';
+  renderAllTasks();
+});
 
 /* MODAL TAREFA */
 const modalOverlay = document.getElementById('modalOverlay');
@@ -739,6 +959,7 @@ function openModal(task) {
   document.getElementById('taskResponsavel').value = task ? task.responsavel : '';
   document.getElementById('taskPrazo').value = task ? String(task.prazo).split('T')[0] : '';
   document.getElementById('taskStatus').value = task ? task.status : 'Pendente';
+  document.getElementById('taskPrioridade').value = task ? (task.prioridade||'Sem prioridade') : 'Sem prioridade';
   modalOverlay.classList.add('open');
 }
 function closeModal() { modalOverlay.classList.remove('open'); document.getElementById('taskForm').reset(); }
@@ -759,7 +980,8 @@ document.getElementById('btnSaveTask').addEventListener('click', async () => {
     descricao: document.getElementById('taskDescricao').value.trim(),
     responsavel: document.getElementById('taskResponsavel').value.trim(),
     prazo: document.getElementById('taskPrazo').value,
-    status: document.getElementById('taskStatus').value
+    status: document.getElementById('taskStatus').value,
+    prioridade: document.getElementById('taskPrioridade').value
   };
   const ok = await saveTaskAPI(task, !!id);
   if (ok) { showToast(id?'Tarefa atualizada.':'Tarefa incluída.'); closeModal(); fetchAll(true); }
