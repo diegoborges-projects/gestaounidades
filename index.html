@@ -463,6 +463,263 @@
   tr.row-cancelled{opacity:.55;}
   tr.row-cancelled td:first-child{text-decoration:line-through;}
 
+  /* INDICADORES */
+  #indicadorCards{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    padding:0 36px 10px;
+  }
+  .unit-block{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:20px 22px;
+  }
+  .unit-block-title{
+    font-size:15px;
+    font-weight:bold;
+    color:var(--navy);
+    margin:0 0 14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  [data-theme="dark"] .unit-block-title{color:#9DB4F2;}
+  .ind-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+  }
+  .ind-card{
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px;
+  }
+  .ind-card-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:12px;
+  }
+  .ind-name{
+    font-size:12.5px;
+    font-weight:bold;
+    color:var(--ink);
+  }
+  .ind-meta{
+    font-size:10.5px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  .evo-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    font-size:11px;
+    font-weight:bold;
+    padding:3px 9px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .evo-up{background:#E6F7EC; color:#0A7C3E;}
+  .evo-down{background:#FDECEC; color:var(--red);}
+  .evo-flat{background:#EFF1F6; color:var(--ink-soft);}
+  [data-theme="dark"] .evo-up{background:#16331F;}
+  [data-theme="dark"] .evo-down{background:#3A1313;}
+  [data-theme="dark"] .evo-flat{background:#262C42;}
+
+  .bar-chart{
+    display:flex;
+    align-items:flex-end;
+    gap:14px;
+    height:120px;
+    padding-top:10px;
+    position:relative;
+  }
+  .bar-chart::before{
+    content:'';
+    position:absolute;
+    left:0; right:0;
+    bottom:var(--meta-line, 50%);
+    border-top:2px dashed var(--amber);
+    z-index:0;
+  }
+  .bar-col{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    height:100%;
+    justify-content:flex-end;
+    position:relative;
+    z-index:1;
+  }
+  .bar-value{
+    font-size:12px;
+    font-weight:bold;
+    margin-bottom:6px;
+    color:var(--ink);
+  }
+  .bar-fill{
+    width:100%;
+    max-width:48px;
+    border-radius:5px 5px 0 0;
+    transition:height .3s ease;
+  }
+  .bar-fill.ok{background:var(--green);}
+  .bar-fill.bad{background:var(--red);}
+  .bar-label{
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:8px;
+    font-weight:bold;
+  }
+  .meta-tag{
+    font-size:10px;
+    color:var(--amber);
+    font-weight:bold;
+  }
+  .avg-line{
+    position:absolute;
+    left:0; right:0;
+    border-top:2px dashed #1D4ED8;
+    z-index:0;
+  }
+  .avg-tag{
+    font-size:10px;
+    color:#1D4ED8;
+    font-weight:bold;
+    margin-top:2px;
+  }
+  @media (max-width:880px){
+    .ind-grid{grid-template-columns:1fr;}
+  }
+
+  .section-title{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-soft);
+    font-weight:bold;
+    padding:8px 36px 0;
+    margin:0 0 4px;
+  }
+
+  /* TOGGLE BUTTON (variação mês a mês) */
+  .toggle-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .toggle-btn::before{
+    content:'';
+    width:30px;
+    height:17px;
+    border-radius:10px;
+    background:var(--line);
+    position:relative;
+    transition:background .2s ease;
+    display:inline-block;
+  }
+  .toggle-btn::after{
+    content:'';
+    position:absolute;
+    width:13px;
+    height:13px;
+    border-radius:50%;
+    background:#fff;
+    left:18px;
+    top:50%;
+    transform:translateY(-50%);
+    transition:left .2s ease;
+  }
+  .toggle-btn{position:relative; padding-left:48px;}
+  .toggle-btn::before{position:absolute; left:10px; top:50%; transform:translateY(-50%);}
+  .toggle-btn.active::before{background:var(--green);}
+  .toggle-btn.active::after{left:30px;}
+  .toggle-btn:not(.active)::after{left:12px;}
+
+  /* MULTISELECT */
+  .multiselect{position:relative;}
+  .multiselect-trigger{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .ms-arrow{font-size:10px;}
+  .multiselect-panel{
+    display:none;
+    position:absolute;
+    top:calc(100% + 6px);
+    left:0;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    box-shadow:0 12px 28px rgba(0,0,0,.15);
+    padding:10px;
+    min-width:240px;
+    max-height:280px;
+    overflow-y:auto;
+    z-index:50;
+  }
+  .multiselect-panel.open{display:block;}
+  .ms-option{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:13px;
+  }
+  .ms-option:hover{background:var(--ice);}
+  .ms-option input{cursor:pointer;}
+  .ms-divider{
+    border-top:1px solid var(--line);
+    margin:6px 0;
+  }
+
+  /* ACUMULADO ANO */
+  #acumuladoCards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    padding:0 36px 22px;
+  }
+  .acc-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px 18px;
+    border-top:3px solid var(--navy);
+  }
+  .acc-card.ok{border-top-color:var(--green);}
+  .acc-card.bad{border-top-color:var(--red);}
+  .acc-label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-soft);
+    font-weight:bold;
+    margin-bottom:6px;
+  }
+  .acc-value{
+    font-size:24px;
+    font-weight:bold;
+    color:var(--ink);
+  }
+  .acc-card.ok .acc-value{color:var(--green);}
+  .acc-card.bad .acc-value{color:var(--red);}
+  .acc-sub{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin-top:4px;
+  }
+  @media (max-width:880px){
+    #acumuladoCards{grid-template-columns:1fr;}
+  }
+
   /* MODAL */
   .modal-overlay{
     display:none;
@@ -597,8 +854,7 @@
       <p class="subtitle">Visão consolidada por regional e controle de tarefas do time</p>
     </div>
     <div class="header-meta">
-      <div><strong>Competência:</strong> Junho/2026</div>
-      <div class="version-bar" style="justify-content:flex-end; margin-top:8px;">
+      <div class="version-bar" style="justify-content:flex-end;">
         <span class="pill"><span class="pill-update" id="lastUpdatePill">atualizado —</span></span>
         <span class="pill" id="versionPill">v1.00</span>
         <button class="theme-toggle" id="themeToggle" title="Alternar tema claro/escuro" aria-label="Alternar tema claro/escuro">
@@ -610,6 +866,7 @@
   <div class="tabs">
     <button class="tab-btn active" data-view="executivo">Visão Executiva</button>
     <button class="tab-btn" data-view="tarefas">Controle de Tarefas</button>
+    <button class="tab-btn" data-view="indicadores">Indicadores</button>
   </div>
 </header>
 
@@ -709,6 +966,33 @@
 
   <footer>
     Dados de tarefas armazenados em planilha Google Sheets via Apps Script. Visível para todo o time da Central de Projetos.
+  </footer>
+</section>
+
+<section class="view" id="view-indicadores">
+
+  <div class="controls">
+    <div class="multiselect" id="unidadeMultiselect">
+      <button class="btn-secondary multiselect-trigger" id="unidadeMultiTrigger">Unidades: todas <span class="ms-arrow">▾</span></button>
+      <div class="multiselect-panel" id="unidadeMultiPanel"></div>
+    </div>
+    <div class="filter-group" id="indFilterInd">
+      <button class="filter-btn active" data-ind="todos">Todos</button>
+      <button class="filter-btn" data-ind="Churn">Churn</button>
+      <button class="filter-btn" data-ind="Satisfação">Satisfação</button>
+      <button class="filter-btn" data-ind="Prazo até go Live">Prazo Go Live</button>
+    </div>
+    <button class="btn-secondary toggle-btn active" id="toggleVariacao">Variação mês a mês: ligada</button>
+  </div>
+
+  <h2 class="section-title">Acumulado no ano</h2>
+  <div id="acumuladoCards"></div>
+
+  <h2 class="section-title">Evolução mensal</h2>
+  <div id="indicadorCards"></div>
+
+  <footer>
+    Fonte: planilha Gestão Unidades, aba Indicadores. Metas: Churn ≤ 0,7 · Satisfação ≥ 80 · Prazo até Go Live ≥ 50%.
   </footer>
 </section>
 
@@ -1294,8 +1578,8 @@ renderAllExec();
 fetchTasks();
 
 /* ============ VERSIONAMENTO E DATA DE ATUALIZAÇÃO ============ */
-const APP_VERSION = "1.00";
-const LAST_UPDATE = "2026-06-18T10:47:00";
+const APP_VERSION = "2.00";
+const LAST_UPDATE = "2026-06-18T15:30:00";
 
 function formatUpdatePill(iso){
   const d = new Date(iso);
@@ -1329,6 +1613,338 @@ document.getElementById('themeToggle').addEventListener('click', ()=>{
 });
 
 initTheme();
+
+/* =====================================================================
+   VIEW 3: INDICADORES
+===================================================================== */
+const INDICADORES_DATA = [
+  {unidade:'BP ABC PAULISTA', indicador:'Churn', mes:'Janeiro', resultado:0.6},
+  {unidade:'BP ABC PAULISTA', indicador:'Satisfação', mes:'Janeiro', resultado:90},
+  {unidade:'BP ABC PAULISTA', indicador:'Prazo até go Live', mes:'Janeiro', resultado:30},
+  {unidade:'BP ABC PAULISTA', indicador:'Churn', mes:'Fevereiro', resultado:0.8},
+  {unidade:'BP ABC PAULISTA', indicador:'Satisfação', mes:'Fevereiro', resultado:80},
+  {unidade:'BP ABC PAULISTA', indicador:'Prazo até go Live', mes:'Fevereiro', resultado:60},
+  {unidade:'BP BH PAMPULHA', indicador:'Churn', mes:'Janeiro', resultado:0.2},
+  {unidade:'BP BH PAMPULHA', indicador:'Satisfação', mes:'Janeiro', resultado:100},
+  {unidade:'BP BH PAMPULHA', indicador:'Prazo até go Live', mes:'Janeiro', resultado:50},
+  {unidade:'BP BH PAMPULHA', indicador:'Churn', mes:'Fevereiro', resultado:1.4},
+  {unidade:'BP BH PAMPULHA', indicador:'Satisfação', mes:'Fevereiro', resultado:30},
+  {unidade:'BP BH PAMPULHA', indicador:'Prazo até go Live', mes:'Fevereiro', resultado:10},
+];
+
+const METAS = {
+  'Churn': {meta:0.7, direcao:'menor', formato:'decimal', sufixo:'%'},
+  'Satisfação': {meta:80, direcao:'maior', formato:'inteiro', sufixo:''},
+  'Prazo até go Live': {meta:50, direcao:'maior', formato:'inteiro', sufixo:'%'}
+};
+
+const MESES_ORDEM = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+let stateInd = { unidadesSelecionadas: null, indicador:'todos', mostrarVariacao:true }; // null = todas
+
+function atingiuMeta(valor, indicador){
+  const m = METAS[indicador];
+  if(!m) return null;
+  return m.direcao === 'menor' ? valor <= m.meta : valor >= m.meta;
+}
+
+function formatIndValue(valor, indicador){
+  const m = METAS[indicador];
+  if(!m) return valor;
+  if(m.formato === 'decimal') return valor.toFixed(1).replace('.', ',') + (m.sufixo||'');
+  return Math.round(valor) + (m.sufixo||'');
+}
+
+function getUnidadesIndicadores(){
+  return [...new Set(INDICADORES_DATA.map(d=>d.unidade))].sort();
+}
+
+function getUnidadesAtivas(){
+  return stateInd.unidadesSelecionadas && stateInd.unidadesSelecionadas.length > 0
+    ? stateInd.unidadesSelecionadas
+    : getUnidadesIndicadores();
+}
+
+function getMesesDisponiveis(unidade, indicador){
+  const regs = INDICADORES_DATA.filter(d=>d.unidade===unidade && d.indicador===indicador);
+  return regs
+    .map(r=>r.mes)
+    .filter((m,i,arr)=>arr.indexOf(m)===i)
+    .sort((a,b)=>MESES_ORDEM.indexOf(a)-MESES_ORDEM.indexOf(b));
+}
+
+function getUltimoMesGeral(unidades, indicador){
+  let meses = [];
+  unidades.forEach(u=>{ meses = meses.concat(getMesesDisponiveis(u, indicador)); });
+  meses = [...new Set(meses)].sort((a,b)=>MESES_ORDEM.indexOf(a)-MESES_ORDEM.indexOf(b));
+  return meses.length ? meses[meses.length-1] : null;
+}
+
+function calcEvolucao(unidade, indicador){
+  const meses = getMesesDisponiveis(unidade, indicador);
+  if(meses.length < 2) return null;
+  const ultimoMes = meses[meses.length-1];
+  const penultimoMes = meses[meses.length-2];
+  const vUltimo = INDICADORES_DATA.find(d=>d.unidade===unidade && d.indicador===indicador && d.mes===ultimoMes).resultado;
+  const vPenultimo = INDICADORES_DATA.find(d=>d.unidade===unidade && d.indicador===indicador && d.mes===penultimoMes).resultado;
+  if(vPenultimo === 0) return null;
+
+  const variacaoPct = ((vUltimo - vPenultimo) / Math.abs(vPenultimo)) * 100;
+  const m = METAS[indicador];
+  const melhorou = m.direcao === 'menor' ? (vUltimo < vPenultimo) : (vUltimo > vPenultimo);
+  const piorou = m.direcao === 'menor' ? (vUltimo > vPenultimo) : (vUltimo < vPenultimo);
+
+  return {
+    variacaoPct: Math.abs(variacaoPct),
+    melhorou, piorou,
+    vUltimo, vPenultimo,
+    ultimoMes, penultimoMes
+  };
+}
+
+function calcEvolucaoMedia(unidades, indicador){
+  const evolucoes = unidades.map(u=>calcEvolucao(u, indicador)).filter(e=>e!==null);
+  if(evolucoes.length === 0) return null;
+  const ultimoMes = evolucoes[0].ultimoMes;
+  const penultimoMes = evolucoes[0].penultimoMes;
+  const mediaUltimo = evolucoes.reduce((s,e)=>s+e.vUltimo,0) / evolucoes.length;
+  const mediaPenultimo = evolucoes.reduce((s,e)=>s+e.vPenultimo,0) / evolucoes.length;
+  if(mediaPenultimo === 0) return null;
+
+  const variacaoPct = Math.abs(((mediaUltimo - mediaPenultimo) / Math.abs(mediaPenultimo)) * 100);
+  const m = METAS[indicador];
+  const melhorou = m.direcao === 'menor' ? (mediaUltimo < mediaPenultimo) : (mediaUltimo > mediaPenultimo);
+  const piorou = m.direcao === 'menor' ? (mediaUltimo > mediaPenultimo) : (mediaUltimo < mediaPenultimo);
+
+  return { variacaoPct, melhorou, piorou, ultimoMes, penultimoMes };
+}
+
+/* ---------- MULTISELECT DE UNIDADES ---------- */
+function renderUnidadeMultiselect(){
+  const unidades = getUnidadesIndicadores();
+  const panel = document.getElementById('unidadeMultiPanel');
+  const selecionadas = stateInd.unidadesSelecionadas;
+
+  const optionsHtml = unidades.map(u=>{
+    const checked = !selecionadas || selecionadas.includes(u);
+    return `<label class="ms-option">
+      <input type="checkbox" data-unidade-opt="${u}" ${checked?'checked':''}>
+      ${u}
+    </label>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <label class="ms-option"><input type="checkbox" id="msSelectAll" ${!selecionadas?'checked':''}> Todas as unidades</label>
+    <div class="ms-divider"></div>
+    ${optionsHtml}
+  `;
+
+  updateMultiselectTrigger();
+
+  document.getElementById('msSelectAll').addEventListener('change', (e)=>{
+    if(e.target.checked){
+      stateInd.unidadesSelecionadas = null;
+    } else {
+      stateInd.unidadesSelecionadas = [];
+    }
+    renderUnidadeMultiselect();
+    renderIndicadores();
+  });
+
+  panel.querySelectorAll('[data-unidade-opt]').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      let atuais = stateInd.unidadesSelecionadas ? [...stateInd.unidadesSelecionadas] : [...unidades];
+      const u = cb.getAttribute('data-unidade-opt');
+      if(cb.checked){
+        if(!atuais.includes(u)) atuais.push(u);
+      } else {
+        atuais = atuais.filter(x=>x!==u);
+      }
+      stateInd.unidadesSelecionadas = atuais.length === unidades.length ? null : atuais;
+      renderUnidadeMultiselect();
+      renderIndicadores();
+    });
+  });
+}
+
+function updateMultiselectTrigger(){
+  const trigger = document.getElementById('unidadeMultiTrigger');
+  const ativas = getUnidadesAtivas();
+  const total = getUnidadesIndicadores().length;
+  let label;
+  if(!stateInd.unidadesSelecionadas || ativas.length === total){
+    label = 'Unidades: todas';
+  } else if(ativas.length === 1){
+    label = 'Unidade: ' + ativas[0];
+  } else {
+    label = `Unidades: ${ativas.length} selecionadas`;
+  }
+  trigger.innerHTML = `${label} <span class="ms-arrow">▾</span>`;
+}
+
+document.getElementById('unidadeMultiTrigger').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  document.getElementById('unidadeMultiPanel').classList.toggle('open');
+});
+document.addEventListener('click', (e)=>{
+  const ms = document.getElementById('unidadeMultiselect');
+  if(!ms.contains(e.target)){
+    document.getElementById('unidadeMultiPanel').classList.remove('open');
+  }
+});
+
+/* ---------- TOGGLE VARIAÇÃO MÊS A MÊS ---------- */
+document.getElementById('toggleVariacao').addEventListener('click', ()=>{
+  stateInd.mostrarVariacao = !stateInd.mostrarVariacao;
+  const btn = document.getElementById('toggleVariacao');
+  btn.classList.toggle('active', stateInd.mostrarVariacao);
+  btn.textContent = 'Variação mês a mês: ' + (stateInd.mostrarVariacao ? 'ligada' : 'desligada');
+  renderIndicadores();
+});
+
+/* ---------- GRÁFICO: 1 unidade -> mês a mês | 2+ unidades -> 1 barra por unidade + média ---------- */
+function renderBarChartUnico(unidades, indicador){
+  const m = METAS[indicador];
+
+  if(unidades.length === 1){
+    const unidade = unidades[0];
+    const meses = getMesesDisponiveis(unidade, indicador);
+    const valores = meses.map(mes=>INDICADORES_DATA.find(d=>d.unidade===unidade && d.indicador===indicador && d.mes===mes).resultado);
+    const maxEixo = Math.max(m.meta, ...valores) * 1.25;
+    const metaPct = (m.meta / maxEixo) * 100;
+
+    const bars = meses.map((mes, i)=>{
+      const valor = valores[i];
+      const pct = (valor / maxEixo) * 100;
+      const ok = atingiuMeta(valor, indicador);
+      return `<div class="bar-col">
+        <div class="bar-value">${formatIndValue(valor, indicador)}</div>
+        <div class="bar-fill ${ok?'ok':'bad'}" style="height:${pct}%"></div>
+        <div class="bar-label">${mes.slice(0,3)}</div>
+      </div>`;
+    }).join('');
+
+    return `<div class="bar-chart" style="--meta-line:${metaPct}%">${bars}</div>
+      <div class="meta-tag">Linha amarela pontilhada = meta (${formatIndValue(m.meta, indicador)})</div>`;
+  }
+
+  // Múltiplas unidades: 1 barra por unidade, no mês mais recente disponível, + linha de média
+  const ultimoMes = getUltimoMesGeral(unidades, indicador);
+  if(!ultimoMes) return '<div class="empty-state">Sem dados para esse filtro.</div>';
+
+  const pontos = unidades.map(u=>{
+    const reg = INDICADORES_DATA.find(d=>d.unidade===u && d.indicador===indicador && d.mes===ultimoMes);
+    return reg ? {unidade:u, valor:reg.resultado} : null;
+  }).filter(p=>p!==null);
+
+  if(pontos.length===0) return '<div class="empty-state">Sem dados para esse filtro.</div>';
+
+  const media = pontos.reduce((s,p)=>s+p.valor,0) / pontos.length;
+  const maxEixo = Math.max(m.meta, media, ...pontos.map(p=>p.valor)) * 1.25;
+  const metaPct = (m.meta / maxEixo) * 100;
+  const mediaPct = (media / maxEixo) * 100;
+
+  const bars = pontos.map(p=>{
+    const pct = (p.valor / maxEixo) * 100;
+    const ok = atingiuMeta(p.valor, indicador);
+    const nomeCurto = p.unidade.replace('BP ', '').replace('FILIAL ', '');
+    return `<div class="bar-col">
+      <div class="bar-value">${formatIndValue(p.valor, indicador)}</div>
+      <div class="bar-fill ${ok?'ok':'bad'}" style="height:${pct}%"></div>
+      <div class="bar-label" title="${p.unidade}">${nomeCurto}</div>
+    </div>`;
+  }).join('');
+
+  return `<div class="bar-chart" style="--meta-line:${metaPct}%">
+      <div class="avg-line" style="bottom:${mediaPct}%"></div>
+      ${bars}
+    </div>
+    <div class="meta-tag">Linha amarela pontilhada = meta (${formatIndValue(m.meta, indicador)}) · Referência: ${ultimoMes}</div>
+    <div class="avg-tag">Linha azul pontilhada = média das unidades (${formatIndValue(media, indicador)})</div>`;
+}
+
+function renderEvoBadge(evo){
+  if(!evo) return '<span class="evo-badge evo-flat">sem histórico suficiente</span>';
+  const seta = evo.melhorou ? '▲' : (evo.piorou ? '▼' : '—');
+  const cls = evo.melhorou ? 'evo-up' : (evo.piorou ? 'evo-down' : 'evo-flat');
+  const direcaoTxt = evo.melhorou ? 'melhora' : (evo.piorou ? 'piora' : 'estável');
+  return `<span class="evo-badge ${cls}">${seta} ${evo.variacaoPct.toFixed(0)}% ${direcaoTxt} vs ${evo.penultimoMes.slice(0,3)}</span>`;
+}
+
+/* ---------- ACUMULADO NO ANO ---------- */
+function renderAcumulado(unidades){
+  const indicadoresList = stateInd.indicador === 'todos' ? Object.keys(METAS) : [stateInd.indicador];
+
+  const html = indicadoresList.map(indicador=>{
+    const m = METAS[indicador];
+    // acumulado = média de todos os meses/unidades disponíveis no filtro atual
+    let valores = [];
+    unidades.forEach(u=>{
+      const meses = getMesesDisponiveis(u, indicador);
+      meses.forEach(mes=>{
+        valores.push(INDICADORES_DATA.find(d=>d.unidade===u && d.indicador===indicador && d.mes===mes).resultado);
+      });
+    });
+    if(valores.length===0) return '';
+    const media = valores.reduce((s,v)=>s+v,0) / valores.length;
+    const ok = atingiuMeta(media, indicador);
+    return `<div class="acc-card ${ok?'ok':'bad'}">
+      <div class="acc-label">${indicador} · acumulado no ano</div>
+      <div class="acc-value">${formatIndValue(media, indicador)}</div>
+      <div class="acc-sub">Meta: ${formatIndValue(m.meta, indicador)} · ${valores.length} registro(s) considerados · ${ok?'dentro da meta':'fora da meta'}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('acumuladoCards').innerHTML = html || '<div class="empty-state">Sem dados suficientes para o acumulado.</div>';
+}
+
+/* ---------- RENDER PRINCIPAL ---------- */
+function renderIndicadores(){
+  updateMultiselectTrigger();
+  const unidades = getUnidadesAtivas();
+  const indicadoresList = stateInd.indicador === 'todos' ? Object.keys(METAS) : [stateInd.indicador];
+
+  renderAcumulado(unidades);
+
+  const cards = indicadoresList.map(indicador=>{
+    const temDados = unidades.some(u=>getMesesDisponiveis(u, indicador).length > 0);
+    if(!temDados) return '';
+
+    const m = METAS[indicador];
+    const direcaoTxt = m.direcao==='menor' ? 'quanto menor, melhor' : 'quanto maior, melhor';
+
+    const evoHtml = stateInd.mostrarVariacao
+      ? (unidades.length === 1 ? renderEvoBadge(calcEvolucao(unidades[0], indicador)) : renderEvoBadge(calcEvolucaoMedia(unidades, indicador)))
+      : '';
+
+    return `<div class="ind-card">
+      <div class="ind-card-head">
+        <div>
+          <div class="ind-name">${indicador}</div>
+          <div class="ind-meta">${direcaoTxt}</div>
+        </div>
+        ${evoHtml}
+      </div>
+      ${renderBarChartUnico(unidades, indicador)}
+    </div>`;
+  }).join('');
+
+  document.getElementById('indicadorCards').innerHTML = cards.trim()
+    ? `<div class="unit-block"><div class="ind-grid">${cards}</div></div>`
+    : '<div class="empty-state">Nenhum indicador encontrado para esse filtro.</div>';
+}
+
+document.querySelectorAll('#indFilterInd .filter-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#indFilterInd .filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    stateInd.indicador = btn.getAttribute('data-ind');
+    renderIndicadores();
+  });
+});
+
+renderUnidadeMultiselect();
+renderIndicadores();
 </script>
 
 </body>
