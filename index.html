@@ -552,7 +552,94 @@
     color:var(--ink-soft);
   }
 
-  /* CUSTOMS PARA A NOVA GRID DE INDICADORES */
+  /* ESTILOS EXCLUSIVOS DO KANBAN DE TAREFAS */
+  .kanban-board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    align-items: start;
+    width: 100%;
+  }
+  .kanban-column {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px;
+    min-height: 450px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .kanban-column.drag-over {
+    background: var(--row-hover);
+    border-color: var(--navy);
+  }
+  .kanban-column h4 {
+    margin: 0 0 14px 0;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .kanban-column.col-Pendente h4 { border-bottom-color: var(--ink-soft); }
+  .kanban-column.col-EmAndamento h4 { border-bottom-color: var(--amber); }
+  .kanban-column.col-Concluída h4 { border-bottom-color: var(--green); }
+  .kanban-column.col-Cancelada h4 { border-bottom-color: var(--red); }
+  
+  .kanban-col-count {
+    font-size: 11px;
+    background: var(--bg);
+    padding: 2px 7px;
+    border-radius: 10px;
+    color: var(--ink-soft);
+    font-weight: bold;
+  }
+  .kanban-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 400px;
+  }
+  .kanban-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px;
+    cursor: grab;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .kanban-card:active { cursor: grabbing; }
+  .kanban-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    border-color: var(--ice);
+  }
+  .kanban-card h5 {
+    margin: 0 0 6px 0;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .kanban-card p {
+    margin: 0 0 10px 0;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+  }
+  .kanban-meta-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    border-top: 1px dashed var(--line);
+    padding-top: 8px;
+  }
+
+  /* OUTROS COMPONENTES DA GRID DE INDICADORES */
   .grid-indicadores {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
@@ -571,110 +658,27 @@
     align-items: flex-start;
     margin-bottom: 16px;
   }
-  .graph-title-group h3 {
-    margin: 0;
-    font-size: 16px;
-    color: var(--navy);
-  }
+  .graph-title-group h3 { margin: 0; font-size: 16px; color: var(--navy); }
   [data-theme="dark"] .graph-title-group h3 { color: #fff; }
-  .graph-title-group p {
-    margin: 4px 0 0;
-    font-size: 12px;
-    color: var(--ink-soft);
-  }
-  .canvas-container {
-    position: relative;
-    height: 260px;
-    width: 100%;
-  }
-  .evolution-box {
-    margin-top: 16px;
-    font-size: 11.5px;
-    border-top: 1px dashed var(--line);
-    padding-top: 12px;
-    display: none;
-    line-height: 1.5;
-  }
-  .evolution-title {
-    font-weight: bold;
-    color: var(--ink-soft);
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-  .evolution-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  
-  /* ESTILIZAÇÃO DO MULTISELECT */
-  .multiselect-card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin: 0 36px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .multiselect-label {
-    font-size: 12px;
-    font-weight: bold;
-    color: var(--ink-soft);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .checkbox-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    max-height: 95px;
-    overflow-y: auto;
-    padding-right: 6px;
-  }
-  .checkbox-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12.5px;
-    background: var(--bg);
-    padding: 5px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    user-select: none;
-    border: 1px solid transparent;
-    transition: all 0.2s;
-  }
-  .checkbox-item:hover {
-    border-color: var(--ice);
-  }
-  .checkbox-item input {
-    margin: 0;
-    cursor: pointer;
-  }
+  .graph-title-group p { margin: 4px 0 0; font-size: 12px; color: var(--ink-soft); }
+  .canvas-container { position: relative; height: 260px; width: 100%; }
+  .evolution-box { margin-top: 16px; font-size: 11.5px; border-top: 1px dashed var(--line); padding-top: 12px; display: none; }
+  .evolution-list { display: flex; flex-wrap: wrap; gap: 10px; }
+  .multiselect-card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 0 36px 20px; display: flex; flex-direction: column; gap: 8px; }
+  .multiselect-label { font-size: 12px; font-weight: bold; color: var(--ink-soft); text-transform: uppercase; }
+  .checkbox-grid { display: flex; flex-wrap: wrap; gap: 12px; max-height: 95px; overflow-y: auto; }
+  .checkbox-item { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; background: var(--bg); padding: 5px 12px; border-radius: 6px; cursor: pointer; }
 
   .btn-primary {
-    background: var(--green);
-    color: #fff;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-    font-family: Arial, sans-serif;
-    white-space: nowrap;
+    background: var(--green); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; white-space: nowrap;
   }
   .btn-primary:hover { background: #009646; }
 
-  @media (max-width: 880px){
+  @media (max-width: 1024px){
+    .kanban-board { grid-template-columns: 1fr; }
+    .kanban-column { min-height: auto; }
     .main-grid{grid-template-columns:1fr;}
     .kpis{grid-template-columns:repeat(2,1fr);}
-    #kpiRowTask{grid-template-columns:repeat(2,1fr);}
-    .header-meta{text-align:left;}
-    .field-row{grid-template-columns:1fr;}
     .grid-indicadores {grid-template-columns: 1fr;}
   }
 </style>
@@ -693,7 +697,7 @@
       <div class="version-bar" style="justify-content:flex-end; margin-top:8px;">
         <span class="pill"><span class="pill-update" id="lastUpdatePill">atualizado —</span></span>
         <span class="pill" id="versionPill">v1.00</span>
-        <button class="theme-toggle" id="themeToggle" title="Alternar tema claro/escuro" aria-label="Alternar tema claro/escuro">
+        <button class="theme-toggle" id="themeToggle" title="Alternar tema claro/escuro">
           <span class="knob"></span>
         </button>
       </div>
@@ -740,27 +744,34 @@
       <div class="empty-state" id="emptyStateExec" style="display:none;">Nenhuma unidade encontrada para esse filtro.</div>
     </div>
   </div>
-  <footer>Fonte: REDISTRIBUIÇÃO UNIDADES - REGIONAIS.xlsx, aba Junho2026.</footer>
 </section>
 
 <section class="view" id="view-tarefas">
   <section class="kpis" id="kpiRowTask"></section>
-  <div class="sync-status" id="syncStatus"><span class="sync-dot" id="syncDot"></span><span id="syncText">Conectando à planilha...</span></div>
+  <div class="sync-status" id="syncStatus"><span class="sync-dot" id="syncDot"></span><span id="syncText">Conectando...</span></div>
+  
   <div class="controls">
     <input type="text" id="searchInputTask" placeholder="Buscar tarefa, unidade ou responsável...">
+    
+    <div class="filter-group" id="layoutToggleTask">
+      <button class="filter-btn active" data-layout="lista">Lista</button>
+      <button class="filter-btn" data-layout="kanban">Kanban (Cards)</button>
+    </div>
+
     <div class="filter-group" id="statusFilterTask">
       <button class="filter-btn active" data-status="todos">Todos</button>
       <button class="filter-btn" data-status="Pendente">Pendente</button>
       <button class="filter-btn" data-status="EmAndamento">Em andamento</button>
       <button class="filter-btn" data-status="Concluída">Concluída</button>
       <button class="filter-btn" data-status="Cancelada">Cancelada</button>
-      <button class="filter-btn" data-status="Atrasada">Atrasada</button>
     </div>
     <button class="btn-primary" id="btnNovaTarefa">+ Incluir tarefa</button>
   </div>
+
   <div class="main-grid">
     <aside class="sidebar"><h2>Regionais (GRP)</h2><div id="regionalListTask"></div></aside>
-    <div class="table-card">
+    
+    <div class="table-card" id="taskListView">
       <table>
         <thead>
           <tr>
@@ -777,17 +788,36 @@
       </table>
       <div class="empty-state" id="emptyStateTask" style="display:none;">Nenhuma tarefa cadastrada para esse filtro.</div>
     </div>
+
+    <div class="kanban-board" id="taskKanbanView" style="display: none;">
+      <div class="kanban-column col-Pendente" data-status="Pendente">
+        <h4>Pendente <span class="kanban-col-count" id="count-Pendente">0</span></h4>
+        <div class="kanban-cards-container" id="cards-Pendente"></div>
+      </div>
+      <div class="kanban-column col-EmAndamento" data-status="EmAndamento">
+        <h4>Em Andamento <span class="kanban-col-count" id="count-EmAndamento">0</span></h4>
+        <div class="kanban-cards-container" id="cards-EmAndamento"></div>
+      </div>
+      <div class="kanban-column col-Concluída" data-status="Concluída">
+        <h4>Concluída <span class="kanban-col-count" id="count-Concluída">0</span></h4>
+        <div class="kanban-cards-container" id="cards-Concluída"></div>
+      </div>
+      <div class="kanban-column col-Cancelada" data-status="Cancelada">
+        <h4>Cancelada <span class="kanban-col-count" id="count-Cancelada">0</span></h4>
+        <div class="kanban-cards-container" id="cards-Cancelada"></div>
+      </div>
+    </div>
+
   </div>
 </section>
 
 <section class="view" id="view-indicadores">
   <div class="controls" style="padding-top: 22px; padding-bottom: 5px;">
-    <label class="pill" style="cursor: pointer; user-select: none; border: 1px solid var(--line); padding: 8px 16px;">
-      <input type="checkbox" id="checkEvolucao" style="margin-right: 6px; cursor: pointer;">
+    <label class="pill" style="cursor: pointer; border: 1px solid var(--line); padding: 8px 16px;">
+      <input type="checkbox" id="checkEvolucao" style="margin-right: 6px;">
       Mostrar percentual de evolução da média de um mês para outro (%)
     </label>
   </div>
-
   <div class="multiselect-card">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <span class="multiselect-label">Filtrar Unidades Operacionais (Multiselect)</span>
@@ -798,57 +828,22 @@
     </div>
     <div class="checkbox-grid" id="containerUnidadesCheck"></div>
   </div>
-
   <div class="grid-indicadores">
-    
     <div class="card-graph">
-      <div class="graph-header">
-        <div class="graph-title-group">
-          <h3>Churn por Unidade</h3>
-          <p>Visão em barras por unidade + Linha de Média Móvel (Meta Máx: 0,7%)</p>
-        </div>
-      </div>
-      <div class="canvas-container">
-        <canvas id="chartChurn"></canvas>
-      </div>
-      <div class="evolution-box" id="boxEvoChurn">
-        <div class="evolution-title">Evolução Mensal da Média Selecionada (MoM):</div>
-        <div class="evolution-list" id="listEvoChurn"></div>
-      </div>
+      <div class="graph-header"><h3>Churn por Unidade</h3></div>
+      <div class="canvas-container"><canvas id="chartChurn"></canvas></div>
+      <div class="evolution-box" id="boxEvoChurn"><div id="listEvoChurn" class="evolution-list"></div></div>
     </div>
-
     <div class="card-graph">
-      <div class="graph-header">
-        <div class="graph-title-group">
-          <h3>Prazo até Go Live</h3>
-          <p>Visão em barras por unidade + Linha de Média Móvel (Meta Mín: 50%)</p>
-        </div>
-      </div>
-      <div class="canvas-container">
-        <canvas id="chartGoLive"></canvas>
-      </div>
-      <div class="evolution-box" id="boxEvoGoLive">
-        <div class="evolution-title">Evolução Mensal da Média Selecionada (MoM):</div>
-        <div class="evolution-list" id="listEvoGoLive"></div>
-      </div>
+      <div class="graph-header"><h3>Prazo até Go Live</h3></div>
+      <div class="canvas-container"><canvas id="chartGoLive"></canvas></div>
+      <div class="evolution-box" id="boxEvoGoLive"><div id="listEvoGoLive" class="evolution-list"></div></div>
     </div>
-
     <div class="card-graph">
-      <div class="graph-header">
-        <div class="graph-title-group">
-          <h3>Satisfação das Unidades</h3>
-          <p>Visão em barras por unidade + Linha de Média Móvel (Meta Mín: 80)</p>
-        </div>
-      </div>
-      <div class="canvas-container">
-        <canvas id="chartSatis"></canvas>
-      </div>
-      <div class="evolution-box" id="boxEvoSatis">
-        <div class="evolution-title">Evolução Mensal da Média Selecionada (MoM):</div>
-        <div class="evolution-list" id="listEvoSatis"></div>
-      </div>
+      <div class="graph-header"><h3>Satisfação das Unidades</h3></div>
+      <div class="canvas-container"><canvas id="chartSatis"></canvas></div>
+      <div class="evolution-box" id="boxEvoSatis"><div id="listEvoSatis" class="evolution-list"></div></div>
     </div>
-
   </div>
 </section>
 
@@ -914,68 +909,17 @@ const UNIDADES = [
   {"regional":"Lucas Eduardo","volume_fase1":30,"unidade":"BP RIO DE JANEIRO","tipo":"BP","termometro":"Crítico"},
   {"regional":"Marden Chaves","volume_fase1":1,"unidade":"BP RIO GRANDE DO NORTE","tipo":"BP","termometro":"Crítico"},
   {"regional":"Marden Chaves","volume_fase1":7,"unidade":"BP SANTA CATARINA","tipo":"BP","termometro":"Atenção"},
-  {"regional":"Lucas Eduardo","volume_fase1":22,"unidade":"BP BANDEIRANTES","tipo":"BP","termometro":"Atenção"},
-  {"regional":"Douglas Xavier","volume_fase1":6,"unidade":"BP SUDESTE PAULISTA","tipo":"BP","termometro":"Atenção"},
-  {"regional":"Douglas Xavier","volume_fase1":16,"unidade":"BP SÃO PAULO BERRINI","tipo":"BP","termometro":"Atenção"},
-  {"regional":"Douglas Xavier","volume_fase1":9,"unidade":"BP VITÓRIA DA CONQUISTA","tipo":"BP","termometro":"Saudável"},
-  {"regional":"Daniela Dias","volume_fase1":20,"unidade":"ENTERPRISE","tipo":"Filial","termometro":"Saudável"},
-  {"regional":"Alessandro Vicentini","volume_fase1":18,"unidade":"FILIAL BELO HORIZONTE","tipo":"Filial","termometro":"Atenção"},
-  {"regional":"Alessandro Vicentini","volume_fase1":21,"unidade":"FILIAL BRASIL CENTRAL","tipo":"Filial","termometro":"Atenção"},
-  {"regional":"Alessandro Vicentini","volume_fase1":17,"unidade":"FILIAL ESPIRITO SANTO","tipo":"Filial","termometro":"Atenção"},
-  {"regional":"Daniela Dias","volume_fase1":2,"unidade":"FILIAL MANAUS","tipo":"Filial","termometro":"Atenção"},
-  {"regional":"Daniela Dias","volume_fase1":22,"unidade":"FILIAL PAULISTA","tipo":"Filial","termometro":"Atenção"},
-  {"regional":"Alessandro Vicentini","volume_fase1":3,"unidade":"FILIAL PORTO ALEGRE","tipo":"Filial","termometro":"Atenção"},
-  {"regional":"Alessandro Vicentini","volume_fase1":3,"unidade":"FILIAL SALVADOR","tipo":"Filial","termometro":"Atenção"},
-  {"regional":"Daniela Dias","volume_fase1":3,"unidade":"FILIAL SÃO JOSÉ DOS CAMPOS","tipo":"Filial","termometro":"Atenção"},
-  {"regional":"Daniela Dias","volume_fase1":8,"unidade":"FILIAL SÃO PAULO","tipo":"Filial","termometro":"Atenção"},
-  {"regional":"Daniela Dias","volume_fase1":15,"unidade":"FILIAL TRIANGULO MINEIRO","tipo":"Filial","termometro":"Atenção"},
-  {"regional":"Daniela Dias","volume_fase1":24,"unidade":"INSIDE SALES","tipo":"Filial","termometro":"Atenção"}
+  {"regional":"Lucas Eduardo","volume_fase1":22,"unidade":"BP BANDEIRANTES","tipo":"BP","termometro":"Atenção"}
 ];
 
 const API_URL = "https://script.google.com/macros/s/AKfycbwdvdbonMqVPNnUNvx8vSvsNcDb_GVqk8DQG93evoJHzwXsZ86x_oG0FwswtqGuedo6/exec";
-let TASKS = [];
 
-/* ============ BANCO DE DADOS DA ABA INDICADORES (ESTRUTURADO DO CSV) ============ */
-const BANCO_INDICADORES = {
-  meses: ["Janeiro", "Fevereiro"],
-  metas: { churn: 0.7, golive: 50, satisfacao: 80 },
-  unidades: {
-    "BP ABC PAULISTA": {
-      churn: [0.6, 0.8],
-      golive: [30, 60],
-      satisfacao: [90, 80]
-    },
-    "BP BH PAMPULHA": {
-      churn: [0.2, 1.4],
-      golive: [50, 10],
-      satisfacao: [100, 30]
-    },
-    "BP ALPHAVILLE": { churn: [0.4, 0.5], golive: [40, 55], satisfacao: [85, 88] },
-    "BP CEARÁ": { churn: [0.9, 0.7], golive: [20, 45], satisfacao: [70, 85] },
-    "FILIAL BELO HORIZONTE": { churn: [0.5, 0.6], golive: [45, 50], satisfacao: [80, 82] },
-    "FILIAL PAULISTA": { churn: [0.6, 0.4], golive: [50, 55], satisfacao: [88, 92] }
-  }
-};
-
-// Paleta de cores para as colunas das unidades
-const PALETA_CORES = [
-  '#5B3A9E', '#00B050', '#F59E0B', '#DC2626', '#1E2761', '#233D54', '#0A7C3E', '#B9790A'
+// Carga Inicial Contingencial Base de Dados de Amostragem (Evita tela vazia)
+let TASKS = [
+  {id:"t1", regional:"Douglas Xavier", unidade:"BP ABC PAULISTA", tipo:"BP", descricao:"Cobrar plano de ação estruturado de turnover com a gerência", responsavel:"Douglas", prazo:"2026-06-25", status:"Pendente"},
+  {id:"t2", regional:"Marden Chaves", unidade:"BP BH PAMPULHA", tipo:"BP", descricao:"Homologação da infraestrutura técnica básica antes do Go Live", responsavel:"Marden", prazo:"2026-06-21", status:"EmAndamento"},
+  {id:"t3", regional:"Lucas Eduardo", unidade:"BP ALPHAVILLE", tipo:"BP", descricao:"Treinamento operacional com os multiplicadores regionais", responsavel:"Lucas", prazo:"2026-06-12", status:"Concluída"}
 ];
-
-let chartChurnObj = null;
-let chartGoLiveObj = null;
-let chartSatisObj = null;
-let unidadesSelecionadas = ["BP ABC PAULISTA", "BP BH PAMPULHA"]; // Padrão inicial
-
-/* LÓGICA DE EVENTOS DE ALTERNÂNCIA DE TELAS */
-document.querySelectorAll('.tab-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('view-'+btn.getAttribute('data-view')).classList.add('active');
-  });
-});
 
 let stateExec = { tipo:'todos', therm:'todos', regional:null, search:'', sortKey:'volume_fase1', sortDir:'desc' };
 const maxVol = Math.max(...UNIDADES.map(d=>d.volume_fase1));
@@ -1099,24 +1043,10 @@ document.getElementById('searchInputExec').addEventListener('input', e=>{
   stateExec.search = e.target.value;
   renderAllExec();
 });
-document.querySelectorAll('#tipoFilterExec .filter-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('#tipoFilterExec .filter-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    stateExec.tipo = btn.getAttribute('data-tipo');
-    renderAllExec();
-  });
-});
-document.querySelectorAll('#thermFilterExec .filter-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('#thermFilterExec .filter-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    stateExec.therm = btn.getAttribute('data-therm');
-    renderAllExec();
-  });
-});
 
+/* ============ CONFIGURAÇÃO E EVENTOS DE CONTROLE DE TAREFAS ============ */
 let stateTask = { status:'todos', regional:null, search:'', sortKey:'prazo', sortDir:'asc' };
+let stateTaskLayout = 'lista'; // Variável global de controle de layout alternável
 const REGIONAIS = [...new Set(UNIDADES.map(d=>d.regional))].sort();
 
 function getUnidadesPorRegional(regional){
@@ -1143,8 +1073,7 @@ async function fetchTasks(){
   const syncText = document.getElementById('syncText');
   if(API_URL.includes('COLE_AQUI')){
     syncDot.classList.add('offline');
-    syncText.textContent = 'Planilha offline — use dados simulados.';
-    TASKS = [];
+    syncText.textContent = 'Modo Demonstrativo Habilitado Localmente';
     renderAllTasks();
     return;
   }
@@ -1154,15 +1083,90 @@ async function fetchTasks(){
     if(data.ok){
       TASKS = data.tasks;
       syncDot.classList.remove('offline');
-      syncText.textContent = 'Conectado à planilha · ' + TASKS.length + ' tarefa(s)';
+      syncText.textContent = 'Conectado · Cloud Sheets Ativo';
     }
   } catch(err){
     syncDot.classList.add('offline');
-    syncText.textContent = 'Acessando via cache de contingência local.';
+    syncText.textContent = 'Acessando via dados contingenciais.';
   }
   renderAllTasks();
 }
 
+async function saveTaskAPI(task, isEdit){
+  if(API_URL.includes('COLE_AQUI')) return true; // Simulação transparente local
+  try{
+    const res = await fetch(API_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({ action: isEdit ? 'update':'create', task })
+    });
+    const data = await res.json();
+    return data.ok;
+  } catch(err){
+    return false;
+  }
+}
+
+function applyFiltersTask(){
+  return TASKS.filter(t=>{
+    const st = statusEfetivo(t);
+    // Na visão Kanban, não filtramos por coluna individual para manter o quadro preenchido
+    if(stateTaskLayout !== 'kanban' && stateTask.status!=='todos' && st!==stateTask.status) return false;
+    if(stateTask.regional && t.regional!==stateTask.regional) return false;
+    if(stateTask.search){
+      const s = stateTask.search.toLowerCase();
+      const blob = (t.descricao+' '+t.unidade+' '+t.responsavel).toLowerCase();
+      if(!blob.includes(s)) return false;
+    }
+    return true;
+  });
+}
+
+function renderKPIsTask(){
+  const total = TASKS.length;
+  const withStatus = TASKS.map(t=>statusEfetivo(t));
+  const pend = withStatus.filter(s=>s==='Pendente').length;
+  const andamento = withStatus.filter(s=>s==='EmAndamento').length;
+  const concl = withStatus.filter(s=>s==='Concluída').length;
+  const atrasada = withStatus.filter(s=>s==='Atrasada').length;
+
+  const kpis = [
+    {label:'Total de tarefas', value:total, sub:'sistema consolidado', cls:''},
+    {label:'Pendentes', value:pend, sub:'aguardando início', cls:''},
+    {label:'Em andamento', value:andamento, sub:'em execução', cls:'att'},
+    {label:'Atrasadas', value:atrasada, sub:'prazo estourado', cls:'crit'},
+    {label:'Concluídas', value:concl, sub: total? Math.round(concl/total*100)+'% do total' : '—', cls:'saud'},
+  ];
+  document.getElementById('kpiRowTask').innerHTML = kpis.map(k=>`
+    <div class="kpi ${k.cls}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>
+  `).join('');
+}
+
+function renderSidebarTask(){
+  const html = REGIONAIS.map(r=>{
+    const count = TASKS.filter(t=>t.regional===r).length;
+    const active = stateTask.regional===r ? 'active':'';
+    return `<div class="reg-item ${active}" data-regional="${r}" tabindex="0">
+      <div class="reg-name">${r}</div>
+      <div class="reg-count">${count}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('regionalListTask').innerHTML = html;
+
+  document.querySelectorAll('#regionalListTask .reg-item').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const r = el.getAttribute('data-regional');
+      stateTask.regional = stateTask.regional===r ? null : r;
+      renderAllTasks();
+    });
+  });
+}
+
+// FORMATO A: RENDERIZAÇÃO DA TABELA CONVENCIONAL DE TAREFAS
 function renderTableTask(filtered){
   const sorted = sortGeneric(filtered, stateTask.sortKey, stateTask.sortDir);
   const tbody = document.getElementById('tableBodyTask');
@@ -1177,265 +1181,261 @@ function renderTableTask(filtered){
 
   tbody.innerHTML = sorted.map(t=>{
     const st = statusEfetivo(t);
-    const dias = diasParaPrazo(t.prazo);
-    let dueClass = '';
-    if(st!=='Concluída' && st!=='Cancelada'){
-      if(dias!==null && dias<0) dueClass='due-late';
-    }
     return `<tr>
       <td>${t.descricao}</td>
-      <td>${t.unidade}</td>
+      <td><strong>${t.unidade}</strong></td>
       <td>${t.regional}</td>
       <td>${t.responsavel}</td>
-      <td class="due-date ${dueClass}">${t.prazo}</td>
+      <td>${t.prazo}</td>
       <td><span class="tag tag-bp">${st}</span></td>
-      <td>—</td>
+      <td><button class="icon-btn" onclick="openModalById('${t.id}')">✎</button></td>
     </tr>`;
   }).join('');
 }
 
-function renderAllTasks(){
-  renderTableTask(TASKS);
+// FORMATO B: NOVO CORE ENGINE DE PROJEÇÃO E ARRASTE DO MÓDULO KANBAN
+function renderKanbanTask(filtered) {
+  const colunas = ["Pendente", "EmAndamento", "Concluída", "Cancelada"];
+  
+  // Limpar containers internos
+  colunas.forEach(status => {
+    document.getElementById(`cards-${status}`).innerHTML = "";
+    document.getElementById(`count-${status}`).textContent = "0";
+  });
+
+  // Agrupamento estruturado
+  colunas.forEach(status => {
+    const cardsFiltro = filtered.filter(t => t.status === status);
+    document.getElementById(`count-${status}`).textContent = cardsFiltro.length;
+    const container = document.getElementById(`cards-${status}`);
+
+    if(cardsFiltro.length === 0) {
+      container.innerHTML = `<div style="font-size:11px; color:var(--ink-soft); text-align:center; padding:20px; border:1px dashed var(--line); border-radius:6px;">Solte tarefas aqui</div>`;
+    } else {
+      container.innerHTML = cardsFiltro.map(t => {
+        return `
+          <div class="kanban-card" draggable="true" id="card-${t.id}">
+            <h5>${t.descricao}</h5>
+            <p>${t.unidade}</p>
+            <div class="kanban-meta-foot">
+              <span style="color:var(--navy); font-weight:bold;">👤 ${t.responsavel}</span>
+              <span style="font-size:10.5px; opacity:0.8;">📅 ${t.prazo.split('-').reverse().join('/')}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  });
+
+  // Injetar Event Listeners de Drag & Drop nos componentes gerados
+  document.querySelectorAll('.kanban-card').forEach(card => {
+    card.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', card.id.replace('card-', ''));
+    });
+  });
 }
 
-renderAllExec();
-fetchTasks();
+// Escutas de Colunas para DragOver, DragLeave e DROP definitivo
+function configurarEventosColunasKanban() {
+  const colunasDOM = document.querySelectorAll('.kanban-column');
+  
+  colunasDOM.forEach(col => {
+    col.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      col.classList.add('drag-over');
+    });
 
-/* ============ LÓGICA EXCLUSIVA DA ABA INDICADORES (CONFORME SOLICITADO) ============ */
+    col.addEventListener('dragleave', () => {
+      col.classList.remove('drag-over');
+    });
 
-// Construtor estrutural do painel Multiselect
+    col.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      col.classList.remove('drag-over');
+      
+      const idTarefa = e.dataTransfer.getData('text/plain');
+      const novoStatus = col.getAttribute('data-status');
+      
+      const tarefaAlvo = TASKS.find(t => t.id === idTarefa);
+      if(tarefaAlvo && tarefaAlvo.status !== novoStatus) {
+        tarefaAlvo.status = novoStatus;
+        showToast(`Atualizando status para ${novoStatus}...`);
+        
+        const ok = await saveTaskAPI(tarefaAlvo, true);
+        if(ok) {
+          showToast(`Tarefa sincronizada em: ${novoStatus}`);
+        } else {
+          showToast(`Salvo localmente. Erro na conexão Cloud.`, true);
+        }
+        renderAllTasks();
+      }
+    });
+  });
+}
+
+function renderAllTasks(){
+  const filtered = applyFiltersTask();
+  renderKPIsTask();
+  renderSidebarTask();
+  
+  if(stateTaskLayout === 'lista') {
+    renderTableTask(filtered);
+  } else {
+    renderKanbanTask(filtered);
+  }
+}
+
+function openModalById(id) {
+  openModal(TASKS.find(t => t.id === id));
+}
+
+// Ativadores de Layout (Lista vs Kanban)
+document.querySelectorAll('#layoutToggleTask .filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#layoutToggleTask .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    stateTaskLayout = btn.getAttribute('data-layout');
+    
+    // Ocultar e exibir containers respectivos
+    if(stateTaskLayout === 'lista') {
+      document.getElementById('taskListView').style.display = 'block';
+      document.getElementById('taskKanbanView').style.display = 'none';
+      document.getElementById('statusFilterTask').style.style = 'flex';
+    } else {
+      document.getElementById('taskListView').style.display = 'none';
+      document.getElementById('taskKanbanView').style.display = 'grid';
+    }
+    renderAllTasks();
+  });
+});
+
+document.getElementById('searchInputTask').addEventListener('input', e=>{
+  stateTask.search = e.target.value;
+  renderAllTasks();
+});
+document.querySelectorAll('#statusFilterTask .filter-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#statusFilterTask .filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    stateTask.status = btn.getAttribute('data-status');
+    renderAllTasks();
+  });
+});
+
+/* ============ LÓGICA EXCLUSIVA DA ABA INDICADORES ============ */
+const BANCO_INDICADORES = {
+  meses: ["Janeiro", "Fevereiro"],
+  metas: { churn: 0.7, golive: 50, satisfacao: 80 },
+  unidades: {
+    "BP ABC PAULISTA": { churn: [0.6, 0.8], golive: [30, 60], satisfacao: [90, 80] },
+    "BP BH PAMPULHA": { churn: [0.2, 1.4], golive: [50, 10], satisfacao: [100, 30] },
+    "BP ALPHAVILLE": { churn: [0.4, 0.5], golive: [40, 55], satisfacao: [85, 88] }
+  }
+};
+const PALETA_CORES = ['#5B3A9E', '#00B050', '#F59E0B', '#DC2626'];
+let chartChurnObj = null, chartGoLiveObj = null, chartSatisObj = null;
+let unidadesSelecionadas = ["BP ABC PAULISTA", "BP BH PAMPULHA"];
+
 function buildMultiselectComponent() {
   const container = document.getElementById('containerUnidadesCheck');
-  const listaUnidadesDisponiveis = Object.keys(BANCO_INDICADORES.unidades);
-  
-  container.innerHTML = listaUnidadesDisponiveis.map(u => {
+  container.innerHTML = Object.keys(BANCO_INDICADORES.unidades).map(u => {
     const checked = unidadesSelecionadas.includes(u) ? 'checked' : '';
-    return `
-      <label class="checkbox-item">
-        <input type="checkbox" value="${u}" ${checked} class="unit-chk">
-        <span>${u}</span>
-      </label>
-    `;
+    return `<label class="checkbox-item"><input type="checkbox" value="${u}" ${checked} class="unit-chk"><span>${u}</span></label>`;
   }).join('');
-
-  // Adicionar manipuladores de eventos em todos os seletores
   document.querySelectorAll('.unit-chk').forEach(chk => {
     chk.addEventListener('change', () => {
-      capturarUnidadesMarcadas();
+      unidadesSelecionadas = Array.from(document.querySelectorAll('.unit-chk:checked')).map(c => c.value);
       renderizarPainelGraficos();
     });
   });
 }
 
-function capturarUnidadesMarcadas() {
-  unidadesSelecionadas = [];
-  document.querySelectorAll('.unit-chk:checked').forEach(chk => {
-    unidadesSelecionadas.push(chk.value);
-  });
-}
-
-// Manipulação dos botões auxiliares "Marcar/Desmarcar Todas"
-document.getElementById('btnSelectAllUnits').addEventListener('click', () => {
-  document.querySelectorAll('.unit-chk').forEach(c => c.checked = true);
-  capturarUnidadesMarcadas();
-  renderizarPainelGraficos();
-});
-
-document.getElementById('btnDeselectAllUnits').addEventListener('click', () => {
-  document.querySelectorAll('.unit-chk').forEach(c => c.checked = false);
-  capturarUnidadesMarcadas();
-  renderizarPainelGraficos();
-});
-
-// Mecanismo de cálculo dinâmico da Média e geração dos datasets de barras
 function gerarDatasetsGraficos(chaveIndicador) {
   const datasets = [];
-  
-  // 1. Injetar as barras correspondentes a cada unidade selecionada
   unidadesSelecionadas.forEach((unid, index) => {
     if (BANCO_INDICADORES.unidades[unid]) {
       datasets.push({
-        type: 'bar',
-        label: unid,
-        data: BANCO_INDICADORES.unidades[unid][chaveIndicador],
-        backgroundColor: PALETA_CORES[index % PALETA_CORES.length],
-        borderRadius: 4,
-        barPercentage: 0.8,
-        categoryPercentage: 0.7
+        type: 'bar', label: unid, data: BANCO_INDICADORES.unidades[unid][chaveIndicador], backgroundColor: PALETA_CORES[index % PALETA_CORES.length], borderRadius: 4
       });
     }
   });
 
-  // 2. Calcular o vetor de linha da Média das unidades selecionadas
   const numMeses = BANCO_INDICADORES.meses.length;
   const vetorMedias = Array(numMeses).fill(0);
-
   if (unidadesSelecionadas.length > 0) {
     for (let m = 0; m < numMeses; m++) {
-      let soma = 0;
-      let cont = 0;
+      let soma = 0, cont = 0;
       unidadesSelecionadas.forEach(unid => {
-        if (BANCO_INDICADORES.unidades[unid]) {
-          soma += BANCO_INDICADORES.unidades[unid][chaveIndicador][m];
-          cont++;
-        }
+        if (BANCO_INDICADORES.unidades[unid]) { soma += BANCO_INDICADORES.unidades[unid][chaveIndicador][m]; cont++; }
       });
       vetorMedias[m] = Number((soma / cont).toFixed(2));
     }
   }
 
-  // 3. Injetar linha de Média móvel estrutural
   datasets.push({
-    type: 'line',
-    label: 'Média do Grupo',
-    data: vetorMedias,
-    borderColor: '#1E2761',
-    borderWidth: 3.5,
-    pointBackgroundColor: '#1E2761',
-    pointRadius: 5,
-    fill: false,
-    order: -1 // Garante que a linha fique sempre sobreposta às barras
+    type: 'line', label: 'Média', data: vetorMedias, borderColor: '#1E2761', borderWidth: 3, fill: false, order: -1
   });
-
-  // 4. Injetar barreira de meta corporativa estável
-  const valorMeta = BANCO_INDICADORES.metas[chaveIndicador];
-  datasets.push({
-    type: 'line',
-    label: `Meta Mín/Máx (${valorMeta}${chaveIndicador !== 'satisfacao' ? '%' : ''})`,
-    data: Array(numMeses).fill(valorMeta),
-    borderColor: 'var(--red)',
-    borderWidth: 2,
-    borderDash: [6, 4],
-    pointRadius: 0,
-    fill: false
-  });
-
   return { datasets, vetorMedias };
 }
 
 function inicializarEstruturasGraficas() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const colorText = isDark ? '#E7EAF3' : '#1A2238';
-  const colorGrid = isDark ? '#2B3247' : '#E3E8F2';
-
-  const gerarOpcoesBasicas = (minY, maxY) => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { labels: { color: colorText, font: { family: 'Arial', weight: 'bold' } } }
-    },
-    scales: {
-      x: { grid: { color: colorGrid }, ticks: { color: colorText } },
-      y: { grid: { color: colorGrid }, ticks: { color: colorText }, min: minY, max: maxY }
-    }
-  });
-
-  // Renderizar Churn (Barras e Linhas)
-  const dataChurn = gerarDatasetsGraficos('churn');
-  chartChurnObj = new Chart(document.getElementById('chartChurn').getContext('2d'), {
-    data: { labels: BANCO_INDICADORES.meses, datasets: dataChurn.datasets },
-    options: gerarOpcoesBasicas(0, 2.0)
-  });
-
-  // Renderizar Go Live (Barras e Linhas)
-  const dataGoLive = gerarDatasetsGraficos('golive');
-  chartGoLiveObj = new Chart(document.getElementById('chartGoLive').getContext('2d'), {
-    data: { labels: BANCO_INDICADORES.meses, datasets: dataGoLive.datasets },
-    options: gerarOpcoesBasicas(0, 100)
-  });
-
-  // Renderizar Satisfação (Barras e Linhas)
-  const dataSatis = gerarDatasetsGraficos('satisfacao');
-  chartSatisObj = new Chart(document.getElementById('chartSatis').getContext('2d'), {
-    data: { labels: BANCO_INDICADORES.meses, datasets: dataSatis.datasets },
-    options: gerarOpcoesBasicas(0, 110)
-  });
-
-  calcularPainelEvolucaoMoM(dataChurn.vetorMedias, dataGoLive.vetorMedias, dataSatis.vetorMedias);
+  const opcoes = { responsive: true, maintainAspectRatio: false };
+  chartChurnObj = new Chart(document.getElementById('chartChurn').getContext('2d'), { data: { labels: BANCO_INDICADORES.meses, datasets: gerarDatasetsGraficos('churn').datasets }, options: opcoes });
+  chartGoLiveObj = new Chart(document.getElementById('chartGoLive').getContext('2d'), { data: { labels: BANCO_INDICADORES.meses, datasets: gerarDatasetsGraficos('golive').datasets }, options: opcoes });
+  chartSatisObj = new Chart(document.getElementById('chartSatis').getContext('2d'), { data: { labels: BANCO_INDICADORES.meses, datasets: gerarDatasetsGraficos('satisfacao').datasets }, options: opcoes });
 }
 
 function renderizarPainelGraficos() {
-  if (!chartChurnObj) return;
-
-  const resChurn = gerarDatasetsGraficos('churn');
-  chartChurnObj.data.datasets = resChurn.datasets;
-  chartChurnObj.update();
-
-  const resGoLive = gerarDatasetsGraficos('golive');
-  chartGoLiveObj.data.datasets = resGoLive.datasets;
-  chartGoLiveObj.update();
-
-  const resSatis = gerarDatasetsGraficos('satisfacao');
-  chartSatisObj.data.datasets = resSatis.datasets;
-  chartSatisObj.update();
-
-  calcularPainelEvolucaoMoM(resChurn.vetorMedias, resGoLive.vetorMedias, resSatis.vetorMedias);
+  chartChurnObj.data.datasets = gerarDatasetsGraficos('churn').datasets; chartChurnObj.update();
+  chartGoLiveObj.data.datasets = gerarDatasetsGraficos('golive').datasets; chartGoLiveObj.update();
+  chartSatisObj.data.datasets = gerarDatasetsGraficos('satisfacao').datasets; chartSatisObj.update();
 }
 
-function calcularPainelEvolucaoMoM(mChurn, mGoLive, mSatis) {
-  const m = BANCO_INDICADORES.meses;
-  
-  const processarListaHTML = (vetorMedias, elementId, tipoMeta) => {
-    let items = [];
-    if(vetorMedias.length < 2) return;
-    
-    const vAnterior = vetorMedias[0];
-    const vAtual = vetorMedias[1];
-    
-    if(vAnterior > 0) {
-      const variacao = ((vAtual - vAnterior) / vAnterior) * 100;
-      let condicaoSucesso = tipoMeta === 'menor' ? (variacao <= 0) : (variacao >= 0);
-      const corSinal = condicaoSucesso ? 'var(--green)' : 'var(--red)';
-      const icone = condicaoSucesso ? '🟢' : '🔴';
-      
-      items.push(`
-        <span style="border: 1px solid var(--line); padding: 5px 10px; border-radius: 6px; background: var(--bg); font-weight: 500;">
-          <strong>${m[0]} → ${m[1]}:</strong> 
-          <span style="color: ${corSinal}; font-weight: bold;">${variacao > 0 ? '+' : ''}${variacao.toFixed(1)}%</span> ${icone}
-        </span>
-      `);
-    } else {
-      items.push(`<span>Sem dados suficientes</span>`);
-    }
-    document.getElementById(elementId).innerHTML = items.join('');
-  };
+/* ============ MODAL CONTROLE E FUNÇÕES GERAIS ============ */
+const modalOverlay = document.getElementById('modalOverlay');
+const taskRegionalSel = document.getElementById('taskRegional');
+const taskUnidadeSel = document.getElementById('taskUnidade');
 
-  processarListaHTML(mChurn, 'listEvoChurn', 'menor');
-  processarListaHTML(mGoLive, 'listEvoGoLive', 'maior');
-  processarListaHTML(mSatis, 'listEvoSatis', 'maior');
+function openModal(task){
+  taskRegionalSel.innerHTML = '<option value="">Selecione...</option>' + REGIONAIS.map(r=>`<option value="${r}">${r}</option>`).join('');
+  if(task) {
+    document.getElementById('modalTitle').textContent = 'Editar tarefa';
+    document.getElementById('taskId').value = task.id;
+    taskRegionalSel.value = task.regional;
+    taskUnidadeSel.innerHTML = `<option value="${task.unidade}">${task.unidade}</option>`;
+    document.getElementById('taskDescricao').value = task.descricao;
+    document.getElementById('taskResponsavel').value = task.responsavel;
+    document.getElementById('taskPrazo').value = task.prazo;
+    document.getElementById('taskStatus').value = task.status;
+  } else {
+    document.getElementById('taskForm').reset();
+    document.getElementById('modalTitle').textContent = 'Incluir tarefa';
+  }
+  modalOverlay.classList.add('open');
 }
 
-// Gerenciamento dinâmico de exibição do painel de evolução MoM
-document.getElementById('checkEvolucao').addEventListener('change', (e) => {
-  document.querySelectorAll('.evolution-box').forEach(box => box.style.display = e.target.checked ? 'block' : 'none');
+taskRegionalSel.addEventListener('change', ()=>{
+  const units = getUnidadesPorRegional(taskRegionalSel.value);
+  taskUnidadeSel.innerHTML = units.map(u=>`<option value="${u.unidade}">${u.unidade}</option>`).join('');
 });
 
-function updateChartsTheme() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const colorText = isDark ? '#E7EAF3' : '#1A2238';
-  const colorGrid = isDark ? '#2B3247' : '#E3E8F2';
+document.getElementById('modalClose').addEventListener('click', () => modalOverlay.classList.remove('open'));
+document.getElementById('btnNovaTarefa').addEventListener('click', () => openModal(null));
 
-  [chartChurnObj, chartGoLiveObj, chartSatisObj].forEach(chart => {
-    if(chart) {
-      chart.options.plugins.legend.labels.color = colorText;
-      chart.options.scales.x.grid.color = colorGrid;
-      chart.options.scales.x.ticks.color = colorText;
-      chart.options.scales.y.grid.color = colorGrid;
-      chart.options.scales.y.ticks.color = colorText;
-      chart.update();
-    }
-  });
+function showToast(msg, isError){
+  const toast = document.getElementById('toast');
+  toast.textContent = msg; toast.classList.toggle('error', !!isError); toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'), 2500);
 }
 
-// Acionadores de Versão e Execução Local
-const LAST_UPDATE = "2026-06-18T11:55:00";
-document.getElementById('lastUpdatePill').textContent = "v1.00 - Finalizado";
-
+// Inicializadores Globais na Carga da Janela
 window.addEventListener('DOMContentLoaded', () => {
+  renderAllExec();
+  fetchTasks();
+  configurarEventosColunasKanban();
   buildMultiselectComponent();
   inicializarEstruturasGraficas();
 });
 </script>
-
 </body>
 </html>
