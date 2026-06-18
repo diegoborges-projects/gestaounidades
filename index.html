@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unidades por Regional — Junho/2026</title>
+<style>
+  :root{
+    --navy:#1E2761;
+    --navy-dark:#233D54;
+    --green:#00B050;
+    --red:#DC2626;
+    --amber:#F59E0B;
+    --ice:#CADCFC;
+    --bg:#F4F6FB;
+    --card:#FFFFFF;
+    --ink:#1A2238;
+    --ink-soft:#5B647A;
+    --line:#E3E8F2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+  }
+
+  /* HEADER */
+  header{
+    background:linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+    color:#fff;
+    padding:28px 36px 22px;
+  }
+  .header-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .brand-tag{
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ice);
+    font-weight:bold;
+    margin:0 0 6px;
+  }
+  h1{
+    margin:0;
+    font-size:26px;
+    font-weight:bold;
+  }
+  .subtitle{
+    margin:6px 0 0;
+    font-size:13px;
+    color:#C9D2E8;
+  }
+  .header-meta{
+    text-align:right;
+    font-size:12px;
+    color:#C9D2E8;
+    line-height:1.6;
+  }
+  .header-meta strong{color:#fff;}
+
+  /* KPI ROW */
+  .kpis{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:14px;
+    padding:22px 36px;
+    margin-top:-4px;
+  }
+  .kpi{
+    background:var(--card);
+    border-radius:10px;
+    padding:16px 18px;
+    border:1px solid var(--line);
+    border-top:3px solid var(--navy);
+  }
+  .kpi.crit{border-top-color:var(--red);}
+  .kpi.att{border-top-color:var(--amber);}
+  .kpi.saud{border-top-color:var(--green);}
+  .kpi-label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-soft);
+    font-weight:bold;
+    margin-bottom:6px;
+  }
+  .kpi-value{
+    font-size:28px;
+    font-weight:bold;
+    color:var(--navy);
+    line-height:1;
+  }
+  .kpi.crit .kpi-value{color:var(--red);}
+  .kpi.att .kpi-value{color:var(--amber);}
+  .kpi.saud .kpi-value{color:var(--green);}
+  .kpi-sub{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin-top:5px;
+  }
+
+  /* CONTROLS */
+  .controls{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    padding:0 36px 14px;
+    flex-wrap:wrap;
+  }
+  .controls input[type="text"]{
+    flex:1;
+    min-width:200px;
+    padding:9px 14px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-size:13px;
+    font-family:Arial, sans-serif;
+  }
+  .controls input[type="text"]:focus{
+    outline:2px solid var(--navy);
+    outline-offset:-1px;
+  }
+  .filter-group{
+    display:flex;
+    gap:6px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:4px;
+  }
+  .filter-btn{
+    border:none;
+    background:transparent;
+    padding:7px 13px;
+    font-size:12.5px;
+    font-weight:bold;
+    border-radius:6px;
+    cursor:pointer;
+    color:var(--ink-soft);
+    font-family:Arial, sans-serif;
+  }
+  .filter-btn.active{
+    background:var(--navy);
+    color:#fff;
+  }
+  .filter-btn:focus-visible{outline:2px solid var(--navy);}
+
+  /* MAIN GRID */
+  .main-grid{
+    display:grid;
+    grid-template-columns:280px 1fr;
+    gap:18px;
+    padding:0 36px 36px;
+  }
+
+  /* SIDEBAR REGIONAIS */
+  .sidebar{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px;
+    align-self:start;
+  }
+  .sidebar h2{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-soft);
+    margin:0 0 12px;
+    font-weight:bold;
+  }
+  .reg-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 10px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-bottom:4px;
+    border:1px solid transparent;
+  }
+  .reg-item:hover{background:var(--ice);}
+  .reg-item.active{
+    background:var(--navy);
+    color:#fff;
+  }
+  .reg-name{font-size:13px; font-weight:bold;}
+  .reg-count{
+    font-size:11.5px;
+    background:rgba(30,39,97,.08);
+    padding:2px 8px;
+    border-radius:20px;
+    font-weight:bold;
+  }
+  .reg-item.active .reg-count{
+    background:rgba(255,255,255,.18);
+    color:#fff;
+  }
+  .reg-dots{
+    display:flex;
+    gap:3px;
+    margin-top:4px;
+  }
+  .dot{width:6px;height:6px;border-radius:50%;}
+
+  /* TABLE */
+  .table-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+  }
+  thead th{
+    background:var(--navy);
+    color:#fff;
+    text-align:left;
+    padding:12px 16px;
+    font-size:11.5px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    cursor:pointer;
+    user-select:none;
+    white-space:nowrap;
+  }
+  thead th:hover{background:var(--navy-dark);}
+  thead th .arrow{font-size:10px; opacity:.6; margin-left:4px;}
+  tbody tr{
+    border-bottom:1px solid var(--line);
+  }
+  tbody tr:hover{background:#FAFBFD;}
+  tbody td{
+    padding:11px 16px;
+    color:var(--ink);
+  }
+  .unit-name{font-weight:bold;}
+  .tag{
+    display:inline-block;
+    padding:3px 10px;
+    border-radius:5px;
+    font-size:11px;
+    font-weight:bold;
+  }
+  .tag-bp{background:var(--ice); color:var(--navy);}
+  .tag-filial{background:#EFE9F9; color:#5B3A9E;}
+  .therm{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    font-weight:bold;
+    padding:4px 10px;
+    border-radius:20px;
+  }
+  .therm-dot{width:8px;height:8px;border-radius:50%;}
+  .therm-Crítico{background:#FDECEC; color:var(--red);}
+  .therm-Crítico .therm-dot{background:var(--red);}
+  .therm-Atenção{background:#FEF3E0; color:#B9790A;}
+  .therm-Atenção .therm-dot{background:var(--amber);}
+  .therm-Saudável{background:#E6F7EC; color:#0A7C3E;}
+  .therm-Saudável .therm-dot{background:var(--green);}
+  .vol-bar-wrap{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .vol-bar-bg{
+    width:80px;
+    height:7px;
+    background:var(--line);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .vol-bar-fill{
+    height:100%;
+    background:var(--navy);
+    border-radius:4px;
+  }
+  .vol-num{font-weight:bold; min-width:22px;}
+  .empty-state{
+    padding:40px;
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:13px;
+  }
+
+  footer{
+    padding:16px 36px 28px;
+    font-size:11.5px;
+    color:var(--ink-soft);
+  }
+
+  @media (max-width: 880px){
+    .main-grid{grid-template-columns:1fr;}
+    .kpis{grid-template-columns:repeat(2,1fr);}
+    .header-meta{text-align:left;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <p class="brand-tag">Sankhya · Central de Projetos</p>
+      <h1>Unidades por Regional</h1>
+      <p class="subtitle">Termômetro de saúde, tipo de unidade (BP/Filial) e volume de projetos em Fase 1</p>
+    </div>
+    <div class="header-meta">
+      <div><strong>Competência:</strong> Junho/2026</div>
+      <div>Uberlândia, 18 de Junho de 2026</div>
+    </div>
+  </div>
+</header>
+
+<section class="kpis" id="kpiRow"></section>
+
+<div class="controls">
+  <input type="text" id="searchInput" placeholder="Buscar unidade ou regional...">
+  <div class="filter-group" id="tipoFilter">
+    <button class="filter-btn active" data-tipo="todos">Todos</button>
+    <button class="filter-btn" data-tipo="BP">BP</button>
+    <button class="filter-btn" data-tipo="Filial">Filial</button>
+  </div>
+  <div class="filter-group" id="thermFilter">
+    <button class="filter-btn active" data-therm="todos">Termômetro</button>
+    <button class="filter-btn" data-therm="Crítico">Crítico</button>
+    <button class="filter-btn" data-therm="Atenção">Atenção</button>
+    <button class="filter-btn" data-therm="Saudável">Saudável</button>
+  </div>
+</div>
+
+<div class="main-grid">
+  <aside class="sidebar">
+    <h2>Regionais (GRP)</h2>
+    <div id="regionalList"></div>
+  </aside>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th data-sort="unidade">Unidade <span class="arrow">↕</span></th>
+          <th data-sort="tipo">Tipo <span class="arrow">↕</span></th>
+          <th data-sort="regional">Regional <span class="arrow">↕</span></th>
+          <th data-sort="termometro">Termômetro <span class="arrow">↕</span></th>
+          <th data-sort="volume_fase1">Vol. Fase 1 <span class="arrow">↕</span></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="empty-state" id="emptyState" style="display:none;">Nenhuma unidade encontrada para esse filtro.</div>
+  </div>
+</div>
+
+<footer>
+  Fonte: REDISTRIBUIÇÃO UNIDADES - REGIONAIS.xlsx, aba Junho2026. Uso interno da Central de Projetos.
+</footer>
+
+<script>
+const DATA = [
+  {"regional":"Douglas Xavier","volume_fase1":20,"unidade":"BP ABC PAULISTA","tipo":"BP","termometro":"Crítico"},
+  {"regional":"Lucas Eduardo","volume_fase1":20,"unidade":"BP ALPHAVILLE","tipo":"BP","termometro":"Atenção"},
+  {"regional":"Marden Chaves","volume_fase1":17,"unidade":"BP BH PAMPULHA","tipo":"BP","termometro":"Atenção"},
+  {"regional":"Lucas Eduardo","volume_fase1":31,"unidade":"BP CEARÁ","tipo":"BP","termometro":"Crítico"},
+  {"regional":"Lucas Eduardo","volume_fase1":14,"unidade":"BP CENTRO NORTE","tipo":"BP","termometro":"Atenção"},
+  {"regional":"Marden Chaves","volume_fase1":22,"unidade":"BP CURITIBA","tipo":"BP","termometro":"Atenção"},
+  {"regional":"Marden Chaves","volume_fase1":1,"unidade":"BP INTERIOR PARANAENSE","tipo":"BP","termometro":"Crítico"},
+  {"regional":"Douglas Xavier","volume_fase1":8,"unidade":"BP JUNDIAÍ","tipo":"BP","termometro":"Atenção"},
+  {"regional":"Marden Chaves","volume_fase1":7,"unidade":"BP LITORAL CATARINENSE","tipo":"BP","termometro":"Atenção"},
+  {"regional":"Marden Chaves","volume_fase1":10,"unidade":"BP MATO GROSSO","tipo":"BP","termometro":"Saudável"},
+  {"regional":"Marden Chaves","volume_fase1":7,"unidade":"BP MATO GROSSO DO SUL","tipo":"BP","termometro":"Saudável"},
+  {"regional":"Marden Chaves","volume_fase1":12,"unidade":"BP NORTE CATARINENSE","tipo":"BP","termometro":"Atenção"},
+  {"regional":"Marden Chaves","volume_fase1":6,"unidade":"BP NORTE DE MINAS","tipo":"BP","termometro":"Saudável"},
+  {"regional":"Douglas Xavier","volume_fase1":16,"unidade":"BP RECIFE","tipo":"BP","termometro":"Saudável"},
+  {"regional":"Lucas Eduardo","volume_fase1":30,"unidade":"BP RIO DE JANEIRO","tipo":"BP","termometro":"Crítico"},
+  {"regional":"Marden Chaves","volume_fase1":1,"unidade":"BP RIO GRANDE DO NORTE","tipo":"BP","termometro":"Crítico"},
+  {"regional":"Marden Chaves","volume_fase1":7,"unidade":"BP SANTA CATARINA","tipo":"BP","termometro":"Atenção"},
+  {"regional":"Lucas Eduardo","volume_fase1":22,"unidade":"BP BANDEIRANTES","tipo":"BP","termometro":"Atenção"},
+  {"regional":"Douglas Xavier","volume_fase1":6,"unidade":"BP SUDESTE PAULISTA","tipo":"BP","termometro":"Atenção"},
+  {"regional":"Douglas Xavier","volume_fase1":16,"unidade":"BP SÃO PAULO BERRINI","tipo":"BP","termometro":"Atenção"},
+  {"regional":"Douglas Xavier","volume_fase1":9,"unidade":"BP VITÓRIA DA CONQUISTA","tipo":"BP","termometro":"Saudável"},
+  {"regional":"Daniela Dias","volume_fase1":20,"unidade":"ENTERPRISE","tipo":"Filial","termometro":"Saudável"},
+  {"regional":"Alessandro Vicentini","volume_fase1":18,"unidade":"FILIAL BELO HORIZONTE","tipo":"Filial","termometro":"Atenção"},
+  {"regional":"Alessandro Vicentini","volume_fase1":21,"unidade":"FILIAL BRASIL CENTRAL","tipo":"Filial","termometro":"Atenção"},
+  {"regional":"Alessandro Vicentini","volume_fase1":17,"unidade":"FILIAL ESPIRITO SANTO","tipo":"Filial","termometro":"Atenção"},
+  {"regional":"Daniela Dias","volume_fase1":2,"unidade":"FILIAL MANAUS","tipo":"Filial","termometro":"Atenção"},
+  {"regional":"Daniela Dias","volume_fase1":22,"unidade":"FILIAL PAULISTA","tipo":"Filial","termometro":"Atenção"},
+  {"regional":"Alessandro Vicentini","volume_fase1":3,"unidade":"FILIAL PORTO ALEGRE","tipo":"Filial","termometro":"Atenção"},
+  {"regional":"Alessandro Vicentini","volume_fase1":3,"unidade":"FILIAL SALVADOR","tipo":"Filial","termometro":"Atenção"},
+  {"regional":"Daniela Dias","volume_fase1":3,"unidade":"FILIAL SÃO JOSÉ DOS CAMPOS","tipo":"Filial","termometro":"Atenção"},
+  {"regional":"Daniela Dias","volume_fase1":8,"unidade":"FILIAL SÃO PAULO","tipo":"Filial","termometro":"Atenção"},
+  {"regional":"Daniela Dias","volume_fase1":15,"unidade":"FILIAL TRIANGULO MINEIRO","tipo":"Filial","termometro":"Atenção"},
+  {"regional":"Daniela Dias","volume_fase1":24,"unidade":"INSIDE SALES","tipo":"Filial","termometro":"Atenção"}
+];
+
+let state = { tipo:'todos', therm:'todos', regional:null, search:'', sortKey:'volume_fase1', sortDir:'desc' };
+
+const maxVol = Math.max(...DATA.map(d=>d.volume_fase1));
+
+function applyFilters(){
+  return DATA.filter(d=>{
+    if(state.tipo!=='todos' && d.tipo!==state.tipo) return false;
+    if(state.therm!=='todos' && d.termometro!==state.therm) return false;
+    if(state.regional && d.regional!==state.regional) return false;
+    if(state.search){
+      const s = state.search.toLowerCase();
+      if(!d.unidade.toLowerCase().includes(s) && !d.regional.toLowerCase().includes(s)) return false;
+    }
+    return true;
+  });
+}
+
+function sortData(arr){
+  const dir = state.sortDir==='asc'?1:-1;
+  return [...arr].sort((a,b)=>{
+    let va=a[state.sortKey], vb=b[state.sortKey];
+    if(typeof va === 'string'){ va=va.toLowerCase(); vb=vb.toLowerCase(); }
+    if(va<vb) return -1*dir;
+    if(va>vb) return 1*dir;
+    return 0;
+  });
+}
+
+function renderKPIs(filtered){
+  const total = filtered.length;
+  const volTotal = filtered.reduce((s,d)=>s+d.volume_fase1,0);
+  const crit = filtered.filter(d=>d.termometro==='Crítico').length;
+  const att = filtered.filter(d=>d.termometro==='Atenção').length;
+  const saud = filtered.filter(d=>d.termometro==='Saudável').length;
+
+  const kpis = [
+    {label:'Unidades', value:total, sub:`${filtered.filter(d=>d.tipo==='BP').length} BP · ${filtered.filter(d=>d.tipo==='Filial').length} Filial`, cls:''},
+    {label:'Vol. Fase 1 em And.', value:volTotal, sub:'projetos somados', cls:''},
+    {label:'Críticas', value:crit, sub: total? Math.round(crit/total*100)+'% do total' : '—', cls:'crit'},
+    {label:'Atenção', value:att, sub: total? Math.round(att/total*100)+'% do total' : '—', cls:'att'},
+    {label:'Saudáveis', value:saud, sub: total? Math.round(saud/total*100)+'% do total' : '—', cls:'saud'},
+  ];
+
+  document.getElementById('kpiRow').innerHTML = kpis.map(k=>`
+    <div class="kpi ${k.cls}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>
+  `).join('');
+}
+
+function renderSidebar(){
+  const regionais = [...new Set(DATA.map(d=>d.regional))].sort();
+  const html = regionais.map(r=>{
+    const units = DATA.filter(d=>d.regional===r);
+    const counts = {Crítico:0, Atenção:0, Saudável:0};
+    units.forEach(u=>counts[u.termometro]++);
+    const dotColors = {Crítico:'var(--red)', Atenção:'var(--amber)', Saudável:'var(--green)'};
+    const dots = Object.entries(counts).filter(([,c])=>c>0).map(([k,c])=>
+      Array(c).fill(`<span class="dot" style="background:${dotColors[k]}"></span>`).join('')
+    ).join('');
+    const active = state.regional===r ? 'active':'';
+    return `<div class="reg-item ${active}" data-regional="${r}" tabindex="0">
+      <div>
+        <div class="reg-name">${r}</div>
+        <div class="reg-dots">${dots}</div>
+      </div>
+      <div class="reg-count">${units.length}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('regionalList').innerHTML = html;
+
+  document.querySelectorAll('.reg-item').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const r = el.getAttribute('data-regional');
+      state.regional = state.regional===r ? null : r;
+      renderAll();
+    });
+  });
+}
+
+function renderTable(filtered){
+  const sorted = sortData(filtered);
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+
+  if(sorted.length===0){
+    tbody.innerHTML='';
+    empty.style.display='block';
+    return;
+  }
+  empty.style.display='none';
+
+  tbody.innerHTML = sorted.map(d=>{
+    const pct = Math.round((d.volume_fase1/maxVol)*100);
+    const tagClass = d.tipo==='BP' ? 'tag-bp' : 'tag-filial';
+    return `<tr>
+      <td class="unit-name">${d.unidade}</td>
+      <td><span class="tag ${tagClass}">${d.tipo}</span></td>
+      <td>${d.regional}</td>
+      <td><span class="therm therm-${d.termometro}"><span class="therm-dot"></span>${d.termometro}</span></td>
+      <td>
+        <div class="vol-bar-wrap">
+          <span class="vol-num">${d.volume_fase1}</span>
+          <div class="vol-bar-bg"><div class="vol-bar-fill" style="width:${pct}%"></div></div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAll(){
+  const filtered = applyFilters();
+  renderKPIs(filtered);
+  renderSidebar();
+  renderTable(filtered);
+}
+
+document.getElementById('searchInput').addEventListener('input', e=>{
+  state.search = e.target.value;
+  renderAll();
+});
+
+document.querySelectorAll('#tipoFilter .filter-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#tipoFilter .filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    state.tipo = btn.getAttribute('data-tipo');
+    renderAll();
+  });
+});
+
+document.querySelectorAll('#thermFilter .filter-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#thermFilter .filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    state.therm = btn.getAttribute('data-therm');
+    renderAll();
+  });
+});
+
+document.querySelectorAll('thead th[data-sort]').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.getAttribute('data-sort');
+    if(state.sortKey===key){
+      state.sortDir = state.sortDir==='asc' ? 'desc':'asc';
+    } else {
+      state.sortKey = key;
+      state.sortDir = 'desc';
+    }
+    renderAll();
+  });
+});
+
+renderAll();
+</script>
+
+</body>
+</html>
