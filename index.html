@@ -166,6 +166,9 @@
   .unit-block{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px 22px;}
   .ind-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
   .ind-card{border:1px solid var(--line);border-radius:10px;padding:16px;}
+  .ind-card.wide{grid-column:1/-1;}
+  .ind-chart-wrap{position:relative;height:200px;width:100%;}
+  .ind-chart-wrap.tall{height:260px;}
   .ind-card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
   .ind-name{font-size:12.5px;font-weight:bold;color:var(--ink);}
   .ind-meta{font-size:10.5px;color:var(--ink-soft);margin-top:2px;}
@@ -273,6 +276,7 @@
     .field-row{grid-template-columns:1fr;}
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -481,8 +485,8 @@
    CONFIG
 ============================================================ */
 const API_URL = "https://script.google.com/macros/s/AKfycbxewbeIx2X4gjtv3HXDRF_wUKcWo2m_XbPV1cYzqVFu_wcoioYRjpVHOXmDSfEPYyFB/exec";
-const APP_VERSION = "4.00";
-const LAST_UPDATE = "2026-06-18T18:00:00";
+const APP_VERSION = "5.00";
+const LAST_UPDATE = "2026-06-19T10:00:00";
 
 const METAS_CONFIG = {
   'Churn':            { meta:0.7, direcao:'menor', formato:'decimal', sufixo:'%' },
@@ -1065,86 +1069,204 @@ function renderUnidadeMultiselect() {
     : `Unidades: ${ativas.length} selecionadas <span class="ms-arrow">▾</span>`;
 }
 
-function renderBarChartUnico(unidades, indicador) {
-  const mc = METAS_CONFIG[indicador];
-  const meta = getMetaReal(indicador);
-  if (meta === undefined) return '<div class="empty-state">Meta não configurada.</div>';
+/* Paleta de cores para as unidades nos gráficos */
+const CHART_COLORS = [
+  '#6B4FBB','#00B050','#1D4ED8','#DC2626','#F59E0B',
+  '#0EA5E9','#8B5CF6','#EC4899','#14B8A6','#F97316'
+];
 
-  if (unidades.length === 1) {
-    const meses = getMesesDisponiveis(unidades[0], indicador);
-    const valores = meses.map(m=>IND_DADOS.find(d=>d.unidade===unidades[0]&&d.indicador===indicador&&d.mes===m).resultado);
-    const maxEixo = Math.max(meta, ...valores) * 1.25;
-    const metaPct = (meta/maxEixo)*100;
-    return `<div class="bar-chart" style="--meta-line:${metaPct}%">
-      ${meses.map((m,i)=>{
-        const pct=(valores[i]/maxEixo)*100, ok=atingiuMeta(valores[i],indicador);
-        return `<div class="bar-col"><div class="bar-value">${formatIndValue(valores[i],indicador)}</div><div class="bar-fill ${ok?'ok':'bad'}" style="height:${pct}%"></div><div class="bar-label">${m.slice(0,3)}</div></div>`;
-      }).join('')}
-    </div><div class="meta-tag">— linha amarela = meta (${formatIndValue(meta,indicador)})</div>`;
+/* Instâncias de chart ativas — necessário para destruir antes de recriar */
+const CHART_INSTANCES = {};
+
+function destroyChart(id) {
+  if (CHART_INSTANCES[id]) {
+    CHART_INSTANCES[id].destroy();
+    delete CHART_INSTANCES[id];
   }
-
-  const ult = getUltimoMesGeral(unidades, indicador);
-  if (!ult) return '<div class="empty-state">Sem dados.</div>';
-  const pontos = unidades.map(u=>{
-    const r=IND_DADOS.find(d=>d.unidade===u&&d.indicador===indicador&&d.mes===ult);
-    return r?{unidade:u,valor:r.resultado}:null;
-  }).filter(p=>p);
-  if (!pontos.length) return '<div class="empty-state">Sem dados para o mês mais recente.</div>';
-  const media = pontos.reduce((s,p)=>s+p.valor,0)/pontos.length;
-  const maxEixo = Math.max(meta, media, ...pontos.map(p=>p.valor))*1.25;
-  const metaPct = (meta/maxEixo)*100, mediaPct=(media/maxEixo)*100;
-  return `<div class="bar-chart" style="--meta-line:${metaPct}%">
-    <div class="avg-line" style="bottom:${mediaPct}%"></div>
-    ${pontos.map(p=>{
-      const pct=(p.valor/maxEixo)*100, ok=atingiuMeta(p.valor,indicador);
-      const nome=p.unidade.replace(/^BP |^FILIAL /,'');
-      return `<div class="bar-col"><div class="bar-value">${formatIndValue(p.valor,indicador)}</div><div class="bar-fill ${ok?'ok':'bad'}" style="height:${pct}%"></div><div class="bar-label" title="${p.unidade}">${nome}</div></div>`;
-    }).join('')}
-  </div>
-  <div class="meta-tag">— linha amarela = meta (${formatIndValue(meta,indicador)}) · ref: ${ult}</div>
-  <div class="avg-tag">— linha azul = média (${formatIndValue(media,indicador)})</div>`;
 }
 
-function renderAcumulado(unidades) {
-  const inds = stateInd.indicador==='todos' ? Object.keys(METAS_CONFIG) : [stateInd.indicador];
-  document.getElementById('acumuladoCards').innerHTML = inds.map(indicador=>{
-    const meta=getMetaReal(indicador);
-    let vals=[];
-    unidades.forEach(u=>getMesesDisponiveis(u,indicador).forEach(m=>{
-      const r=IND_DADOS.find(d=>d.unidade===u&&d.indicador===indicador&&d.mes===m);
-      if(r) vals.push(r.resultado);
-    }));
-    if(!vals.length) return '';
-    const media=vals.reduce((s,v)=>s+v,0)/vals.length;
-    const ok=atingiuMeta(media,indicador);
-    return `<div class="acc-card ${ok?'ok':'bad'}">
-      <div class="acc-label">${indicador} · acumulado no ano</div>
-      <div class="acc-value">${formatIndValue(media,indicador)}</div>
-      <div class="acc-sub">Meta: ${formatIndValue(meta,indicador)} · ${vals.length} registro(s) · ${ok?'dentro da meta':'fora da meta'}</div>
-    </div>`;
-  }).join('');
+function buildChart(canvasId, unidades, indicador) {
+  const mc = METAS_CONFIG[indicador];
+  const meta = getMetaReal(indicador);
+  if (meta === undefined) return;
+
+  destroyChart(canvasId);
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  // Todos os meses disponíveis (union de todas as unidades)
+  let todosMeses = [];
+  unidades.forEach(u => {
+    getMesesDisponiveis(u, indicador).forEach(m => {
+      if (!todosMeses.includes(m)) todosMeses.push(m);
+    });
+  });
+  todosMeses.sort((a, b) => MESES_ORDEM.indexOf(a) - MESES_ORDEM.indexOf(b));
+
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const gridColor = isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.07)';
+  const textColor = isDark ? '#9AA3BD' : '#5B647A';
+
+  const datasets = [];
+
+  if (unidades.length === 1) {
+    // 1 unidade: barras únicas por mês, cor varia conforme atinge meta
+    const u = unidades[0];
+    const valores = todosMeses.map(m => {
+      const r = IND_DADOS.find(d => d.unidade===u && d.indicador===indicador && d.mes===m);
+      return r ? r.resultado : null;
+    });
+    const bgColors = valores.map(v => v === null ? 'transparent' : atingiuMeta(v, indicador) ? '#00B050' : '#DC2626');
+    datasets.push({
+      type: 'bar',
+      label: u.replace(/^BP |^FILIAL /, ''),
+      data: valores,
+      backgroundColor: bgColors,
+      borderRadius: 4,
+      order: 2
+    });
+  } else {
+    // N unidades: barras agrupadas por mês, uma cor por unidade
+    unidades.forEach((u, i) => {
+      const valores = todosMeses.map(m => {
+        const r = IND_DADOS.find(d => d.unidade===u && d.indicador===indicador && d.mes===m);
+        return r ? r.resultado : null;
+      });
+      datasets.push({
+        type: 'bar',
+        label: u.replace(/^BP |^FILIAL /, ''),
+        data: valores,
+        backgroundColor: CHART_COLORS[i % CHART_COLORS.length],
+        borderRadius: 4,
+        order: 2
+      });
+    });
+
+    // Linha de média do grupo por mês
+    const mediasPorMes = todosMeses.map(m => {
+      const vals = unidades.map(u => {
+        const r = IND_DADOS.find(d => d.unidade===u && d.indicador===indicador && d.mes===m);
+        return r ? r.resultado : null;
+      }).filter(v => v !== null);
+      return vals.length ? vals.reduce((s,v) => s+v, 0) / vals.length : null;
+    });
+    datasets.push({
+      type: 'line',
+      label: 'Média do Grupo',
+      data: mediasPorMes,
+      borderColor: '#1E2761',
+      backgroundColor: 'transparent',
+      borderWidth: 2.5,
+      pointRadius: 4,
+      pointBackgroundColor: '#1E2761',
+      tension: 0,
+      order: 1
+    });
+  }
+
+  // Linha de meta (annotation via dataset de linha constante)
+  datasets.push({
+    type: 'line',
+    label: `Meta ${mc.direcao === 'menor' ? 'Máx' : 'Mín'} (${formatIndValue(meta, indicador)})`,
+    data: todosMeses.map(() => meta),
+    borderColor: '#F59E0B',
+    borderWidth: 2,
+    borderDash: [6, 4],
+    pointRadius: 0,
+    backgroundColor: 'transparent',
+    order: 0
+  });
+
+  CHART_INSTANCES[canvasId] = new Chart(canvas, {
+    data: { labels: todosMeses, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            font: { size: 11, family: 'Arial' },
+            color: textColor,
+            boxWidth: 14,
+            padding: 12,
+            usePointStyle: false
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              if (ctx.raw === null) return null;
+              return ` ${ctx.dataset.label}: ${formatIndValue(ctx.raw, indicador)}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: gridColor },
+          ticks: { color: textColor, font: { size: 11 } }
+        },
+        y: {
+          grid: { color: gridColor },
+          ticks: {
+            color: textColor,
+            font: { size: 11 },
+            callback: v => formatIndValue(v, indicador)
+          },
+          beginAtZero: true
+        }
+      }
+    }
+  });
 }
 
 function renderIndicadores() {
   const unidades = getUnidadesAtivas();
   const inds = stateInd.indicador==='todos' ? Object.keys(METAS_CONFIG) : [stateInd.indicador];
   renderAcumulado(unidades);
+
+  const multiUnidade = unidades.length > 1;
+
+  // Monta o HTML dos cards (apenas o shell, sem canvas ainda renderizado)
   const cards = inds.map(indicador=>{
     const temDados = unidades.some(u=>getMesesDisponiveis(u,indicador).length>0);
     if(!temDados) return '';
     const mc = METAS_CONFIG[indicador];
-    const evo = stateInd.mostrarVariacao ? (unidades.length===1 ? calcEvolucao(unidades[0],indicador) : calcEvolucaoMedia(unidades,indicador)) : null;
-    return `<div class="ind-card">
+    const evo = stateInd.mostrarVariacao
+      ? (unidades.length===1 ? calcEvolucao(unidades[0],indicador) : calcEvolucaoMedia(unidades,indicador))
+      : null;
+    const canvasId = 'chart-' + indicador.replace(/[^a-z0-9]/gi,'_');
+    const wideClass = multiUnidade ? 'wide' : '';
+    const tallClass = multiUnidade ? 'tall' : '';
+    return `<div class="ind-card ${wideClass}">
       <div class="ind-card-head">
-        <div><div class="ind-name">${indicador}</div><div class="ind-meta">${mc?mc.direcao==='menor'?'quanto menor, melhor':'quanto maior, melhor':''}</div></div>
+        <div>
+          <div class="ind-name">${indicador}</div>
+          <div class="ind-meta">${mc ? (mc.direcao==='menor' ? 'Visão em barras por unidade + Linha de Média Móvel (Meta Máx: '+formatIndValue(getMetaReal(indicador),indicador)+')' : 'Visão em barras por unidade + Linha de Média Móvel (Meta Mín: '+formatIndValue(getMetaReal(indicador),indicador)+')') : ''}</div>
+        </div>
         ${stateInd.mostrarVariacao ? renderEvoBadge(evo) : ''}
       </div>
-      ${renderBarChartUnico(unidades,indicador)}
+      <div class="ind-chart-wrap ${tallClass}">
+        <canvas id="${canvasId}"></canvas>
+      </div>
     </div>`;
   }).join('');
+
   document.getElementById('indicadorCards').innerHTML = cards.trim()
     ? `<div class="unit-block"><div class="ind-grid">${cards}</div></div>`
     : '<div class="empty-state">Nenhum dado disponível para esse filtro.</div>';
+
+  // Após o DOM estar pronto, instancia os charts
+  requestAnimationFrame(() => {
+    inds.forEach(indicador => {
+      const temDados = unidades.some(u=>getMesesDisponiveis(u,indicador).length>0);
+      if (!temDados) return;
+      const canvasId = 'chart-' + indicador.replace(/[^a-z0-9]/gi,'_');
+      buildChart(canvasId, unidades, indicador);
+    });
+  });
 }
 
 document.getElementById('unidadeMultiTrigger').addEventListener('click', e => {
@@ -1189,6 +1311,10 @@ function initTheme() {
 }
 document.getElementById('themeToggle').addEventListener('click', () => {
   applyTheme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light');
+  // Recria os gráficos com as novas cores de tema
+  if (document.getElementById('view-indicadores').classList.contains('active')) {
+    renderIndicadores();
+  }
 });
 initTheme();
 
