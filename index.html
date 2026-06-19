@@ -295,7 +295,7 @@
     <div class="header-meta">
       <div class="version-bar" style="justify-content:flex-end;">
         <span class="pill"><span class="pill-update" id="lastUpdatePill">carregando...</span></span>
-        <span class="pill" id="versionPill">v5.02</span>
+        <span class="pill" id="versionPill">v5.03</span>
         <button class="theme-toggle" id="themeToggle" title="Alternar tema" aria-label="Alternar tema claro/escuro"><span class="knob"></span></button>
       </div>
     </div>
@@ -485,8 +485,8 @@
    CONFIG
 ============================================================ */
 const API_URL = "https://script.google.com/macros/s/AKfycbwf_y3YlYk0enGa2XZqNEfplsjiufIgrq9CjP1BM1TWTXGPqdnyhiVXU-ic7aRfQnya/exec";
-const APP_VERSION = "5.02";
-const LAST_UPDATE = "2026-06-19T11:00:00";
+const APP_VERSION = "5.03";
+const LAST_UPDATE = "2026-06-19T11:30:00";
 
 const METAS_CONFIG = {
   'Churn':            { meta:0.7, direcao:'menor', formato:'decimal', sufixo:'%' },
@@ -520,6 +520,8 @@ async function fetchAll(silent = false) {
     renderAllExec();
     renderAllTasks();
     renderUnidadeMultiselect();
+    // Renderiza indicadores sempre, independente da aba ativa
+    // O guard interno de IND_DADOS.length === 0 protege contra renders vazios
     renderIndicadores();
     updateLastUpdate();
   } catch(err) {
@@ -552,7 +554,15 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     const view = btn.getAttribute('data-view');
     document.getElementById('view-' + view).classList.add('active');
     // Re-renderiza a aba ao ativar: charts precisam do DOM visível para calcular dimensões
-    if (view === 'indicadores') renderIndicadores();
+    if (view === 'indicadores') {
+      if (_indPendente) {
+        // Dados já renderizados no DOM mas charts não foram criados (aba estava escondida)
+        _indPendente = false;
+        _buildAllCharts();
+      } else {
+        renderIndicadores();
+      }
+    }
     if (view === 'tarefas') renderAllTasks();
   });
 });
@@ -1226,33 +1236,49 @@ function buildChart(canvasId, unidades, indicador) {
   });
 }
 
-function renderIndicadores() {
-  const unidades = getUnidadesAtivas();
-  const inds = stateInd.indicador==='todos' ? Object.keys(METAS_CONFIG) : [stateInd.indicador];
-  renderAcumulado(unidades);
+let _indPendente = false; // true quando dados mudaram mas aba não estava visível
 
+function renderIndicadores() {
+  // Guarda: se ainda não tem dados, mostra empty e para
+  if (IND_DADOS.length === 0) {
+    document.getElementById('acumuladoCards').innerHTML = '';
+    document.getElementById('indicadorCards').innerHTML =
+      '<div class="empty-state">Nenhum dado disponível para esse filtro.</div>';
+    return;
+  }
+
+  const abaAtiva = document.getElementById('view-indicadores').classList.contains('active');
+
+  // Se a aba não está visível, monta só o HTML e marca pendência
+  // Os charts serão criados quando o usuário clicar na aba
+  const unidades = getUnidadesAtivas();
+  if (unidades.length === 0) {
+    document.getElementById('indicadorCards').innerHTML =
+      '<div class="empty-state">Selecione ao menos uma unidade.</div>';
+    return;
+  }
+
+  const inds = stateInd.indicador === 'todos' ? Object.keys(METAS_CONFIG) : [stateInd.indicador];
+  renderAcumulado(unidades);
   const multiUnidade = unidades.length > 1;
 
-  // Monta o HTML dos cards (apenas o shell, sem canvas ainda renderizado)
-  const cards = inds.map(indicador=>{
-    const temDados = unidades.some(u=>getMesesDisponiveis(u,indicador).length>0);
-    if(!temDados) return '';
+  const cards = inds.map(indicador => {
+    const temDados = unidades.some(u => getMesesDisponiveis(u, indicador).length > 0);
+    if (!temDados) return '';
     const mc = METAS_CONFIG[indicador];
     const evo = stateInd.mostrarVariacao
-      ? (unidades.length===1 ? calcEvolucao(unidades[0],indicador) : calcEvolucaoMedia(unidades,indicador))
+      ? (unidades.length === 1 ? calcEvolucao(unidades[0], indicador) : calcEvolucaoMedia(unidades, indicador))
       : null;
-    const canvasId = 'chart-' + indicador.replace(/[^a-z0-9]/gi,'_');
-    const wideClass = multiUnidade ? 'wide' : '';
-    const tallClass = multiUnidade ? 'tall' : '';
-    return `<div class="ind-card ${wideClass}">
+    const canvasId = 'chart-' + indicador.replace(/[^a-z0-9]/gi, '_');
+    return `<div class="ind-card ${multiUnidade ? 'wide' : ''}">
       <div class="ind-card-head">
         <div>
           <div class="ind-name">${indicador}</div>
-          <div class="ind-meta">${mc ? (mc.direcao==='menor' ? 'Visão em barras por unidade + Linha de Média Móvel (Meta Máx: '+formatIndValue(getMetaReal(indicador),indicador)+')' : 'Visão em barras por unidade + Linha de Média Móvel (Meta Mín: '+formatIndValue(getMetaReal(indicador),indicador)+')') : ''}</div>
+          <div class="ind-meta">${mc ? (mc.direcao === 'menor' ? 'Meta Máx: ' + formatIndValue(getMetaReal(indicador), indicador) : 'Meta Mín: ' + formatIndValue(getMetaReal(indicador), indicador)) : ''}</div>
         </div>
         ${stateInd.mostrarVariacao ? renderEvoBadge(evo) : ''}
       </div>
-      <div class="ind-chart-wrap ${tallClass}">
+      <div class="ind-chart-wrap ${multiUnidade ? 'tall' : ''}">
         <canvas id="${canvasId}"></canvas>
       </div>
     </div>`;
@@ -1262,15 +1288,26 @@ function renderIndicadores() {
     ? `<div class="unit-block"><div class="ind-grid">${cards}</div></div>`
     : '<div class="empty-state">Nenhum dado disponível para esse filtro.</div>';
 
-  // Duplo rAF: primeiro frame aplica display:block, segundo garante dimensões calculadas
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    inds.forEach(indicador => {
-      const temDados = unidades.some(u=>getMesesDisponiveis(u,indicador).length>0);
+  if (!abaAtiva) {
+    // Aba escondida: marca pendência, charts serão criados ao ativar a aba
+    _indPendente = true;
+    return;
+  }
+
+  _indPendente = false;
+  _buildAllCharts(inds, unidades);
+}
+
+function _buildAllCharts(inds, unidades) {
+  setTimeout(() => {
+    (inds || (stateInd.indicador === 'todos' ? Object.keys(METAS_CONFIG) : [stateInd.indicador])).forEach(indicador => {
+      const u = unidades || getUnidadesAtivas();
+      const temDados = u.some(un => getMesesDisponiveis(un, indicador).length > 0);
       if (!temDados) return;
-      const canvasId = 'chart-' + indicador.replace(/[^a-z0-9]/gi,'_');
-      buildChart(canvasId, unidades, indicador);
+      const canvasId = 'chart-' + indicador.replace(/[^a-z0-9]/gi, '_');
+      buildChart(canvasId, u, indicador);
     });
-  }));
+  }, 60);
 }
 
 document.getElementById('unidadeMultiTrigger').addEventListener('click', e => {
