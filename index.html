@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gestão de Unidades — Central de Projetos</title>
+<title>Gestão de Unidades — Central de Projetos v5.04</title>
 <style>
   :root{
     --navy:#1E2761; --navy-dark:#233D54;
@@ -295,7 +295,7 @@
     <div class="header-meta">
       <div class="version-bar" style="justify-content:flex-end;">
         <span class="pill"><span class="pill-update" id="lastUpdatePill">carregando...</span></span>
-        <span class="pill" id="versionPill">v5.03</span>
+        <span class="pill" id="versionPill">v5.04</span>
         <button class="theme-toggle" id="themeToggle" title="Alternar tema" aria-label="Alternar tema claro/escuro"><span class="knob"></span></button>
       </div>
     </div>
@@ -485,8 +485,8 @@
    CONFIG
 ============================================================ */
 const API_URL = "https://script.google.com/macros/s/AKfycbwf_y3YlYk0enGa2XZqNEfplsjiufIgrq9CjP1BM1TWTXGPqdnyhiVXU-ic7aRfQnya/exec";
-const APP_VERSION = "5.03";
-const LAST_UPDATE = "2026-06-19T11:30:00";
+const APP_VERSION = "5.04";
+const LAST_UPDATE = "2026-06-19T14:00:00";
 
 const METAS_CONFIG = {
   'Churn':            { meta:0.7, direcao:'menor', formato:'decimal', sufixo:'%' },
@@ -496,13 +496,13 @@ const METAS_CONFIG = {
 const MESES_ORDEM = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 /* Estado global — populado pela API */
-let UNIDADES  = [];   // [{regional, volume_fase1, unidade, tipo, termometro}]
-let TASKS     = [];   // [{id, regional, unidade, tipo, descricao, responsavel, prazo, status, ...}]
-let IND_DADOS = [];   // [{unidade, indicador, mes, resultado}]
-let IND_METAS = {};   // {Churn: 0.7, Satisfação: 80, ...}
+let UNIDADES  = [];
+let TASKS     = [];
+let IND_DADOS = [];
+let IND_METAS = {};
 
 /* ============================================================
-   FETCH CENTRAL — busca tudo de uma vez
+   FETCH CENTRAL
 ============================================================ */
 async function fetchAll(silent = false) {
   if (!silent) showLoading('Carregando dados da planilha...');
@@ -520,8 +520,6 @@ async function fetchAll(silent = false) {
     renderAllExec();
     renderAllTasks();
     renderUnidadeMultiselect();
-    // Renderiza indicadores sempre, independente da aba ativa
-    // O guard interno de IND_DADOS.length === 0 protege contra renders vazios
     renderIndicadores();
     updateLastUpdate();
   } catch(err) {
@@ -553,10 +551,8 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.add('active');
     const view = btn.getAttribute('data-view');
     document.getElementById('view-' + view).classList.add('active');
-    // Re-renderiza a aba ao ativar: charts precisam do DOM visível para calcular dimensões
     if (view === 'indicadores') {
       if (_indPendente) {
-        // Dados já renderizados no DOM mas charts não foram criados (aba estava escondida)
         _indPendente = false;
         _buildAllCharts();
       } else {
@@ -603,10 +599,8 @@ function showToast(msg, isError) {
   setTimeout(() => toast.classList.remove('show'), 3200);
 }
 function formatIndValue(valor, indicador) {
-  const m = METAS_CONFIG[indicador] || IND_METAS[indicador];
-  if (!m) return valor;
   const mc = METAS_CONFIG[indicador];
-  if (!mc) return valor;
+  if (!mc) return String(valor);
   return mc.formato === 'decimal'
     ? valor.toFixed(1).replace('.', ',') + (mc.sufixo||'')
     : Math.round(valor) + (mc.sufixo||'');
@@ -653,7 +647,6 @@ function renderAllExec() {
     {label:'Saudáveis', value:saud, sub:total? Math.round(saud/total*100)+'% do total':'—', cls:'saud'},
   ].map(k=>`<div class="kpi ${k.cls}"><div class="kpi-label">${k.label}</div><div class="kpi-value">${k.value}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
 
-  // Sidebar
   const regionais = [...new Set(UNIDADES.map(d => d.regional))].sort();
   const dotColors = {Crítico:'var(--red)', Atenção:'var(--amber)', Saudável:'var(--green)'};
   document.getElementById('regionalListExec').innerHTML = regionais.map(r => {
@@ -676,7 +669,6 @@ function renderAllExec() {
     });
   });
 
-  // Tabela
   const sorted = sortGeneric(filtered, stateExec.sortKey, stateExec.sortDir);
   const empty = document.getElementById('emptyStateExec');
   if (!sorted.length) { document.getElementById('tableBodyExec').innerHTML=''; empty.style.display='block'; return; }
@@ -712,8 +704,6 @@ document.querySelectorAll('#view-executivo thead th[data-sort]').forEach(th => t
    VIEW 2: TAREFAS
 ============================================================ */
 let stateTask = { status:'todos', regional:null, search:'', sortKey:'prazo', sortDir:'asc', prioridade:'todos', viewMode:'lista' };
-const PRIO_ORDER = {'Urgente':0,'Alta':1,'Média':2,'Sem prioridade':3};
-const PRIO_LABEL = {'Urgente':'Urgente','Alta':'Alta','Média':'Média','Sem prioridade':'Sem prioridade'};
 
 async function saveTaskAPI(task, isEdit) {
   try {
@@ -763,7 +753,6 @@ function renderAllTasks() {
     {label:'Canceladas', value:ws.filter(s=>s==='Cancelada').length, sub:'fora do radar', cls:''},
   ].map(k=>`<div class="kpi ${k.cls}"><div class="kpi-label">${k.label}</div><div class="kpi-value">${k.value}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
 
-  // Sidebar regionais
   const regionais = [...new Set(UNIDADES.map(d => d.regional))].sort();
   document.getElementById('regionalListTask').innerHTML = regionais.map(r => {
     const count = TASKS.filter(t => t.regional === r).length;
@@ -844,7 +833,6 @@ let dragId = null;
 
 function renderKanban(filtered) {
   const cols = ['Pendente','EmAndamento','Concluída','Cancelada'];
-  // Ordena por prazo do mais antigo para o mais novo
   const sorted = [...filtered].sort((a,b) => {
     if (!a.prazo) return 1; if (!b.prazo) return -1;
     return new Date(a.prazo) - new Date(b.prazo);
@@ -888,7 +876,6 @@ function renderKanban(filtered) {
       </div>`;
     }).join('') || `<div style="padding:20px;text-align:center;font-size:12px;color:var(--ink-soft);">Sem tarefas</div>`;
 
-    // Drag events nos cards
     container.querySelectorAll('.kanban-card[draggable="true"]').forEach(card => {
       card.addEventListener('dragstart', e => {
         dragId = card.getAttribute('data-id');
@@ -900,7 +887,6 @@ function renderKanban(filtered) {
       btn.addEventListener('click', () => openModal(TASKS.find(t => t.id === btn.getAttribute('data-edit'))))
     );
 
-    // Drop zone
     container.addEventListener('dragover', e => { e.preventDefault(); container.classList.add('drag-over'); });
     container.addEventListener('dragleave', () => container.classList.remove('drag-over'));
     container.addEventListener('drop', async e => {
@@ -1007,7 +993,7 @@ document.getElementById('btnSaveTask').addEventListener('click', async () => {
 });
 
 /* ============================================================
-   VIEW 3: INDICADORES
+   VIEW 3: INDICADORES — UTILITÁRIOS
 ============================================================ */
 let stateInd = { unidadesSelecionadas:null, indicador:'todos', mostrarVariacao:true };
 
@@ -1020,12 +1006,6 @@ function getMesesDisponiveis(unidade, indicador) {
   return IND_DADOS.filter(d=>d.unidade===unidade&&d.indicador===indicador)
     .map(d=>d.mes).filter((m,i,a)=>a.indexOf(m)===i)
     .sort((a,b)=>MESES_ORDEM.indexOf(a)-MESES_ORDEM.indexOf(b));
-}
-function getUltimoMesGeral(unidades, indicador) {
-  let meses = [];
-  unidades.forEach(u=>{ meses=meses.concat(getMesesDisponiveis(u,indicador)); });
-  meses = [...new Set(meses)].sort((a,b)=>MESES_ORDEM.indexOf(a)-MESES_ORDEM.indexOf(b));
-  return meses.length ? meses[meses.length-1] : null;
 }
 function getMetaReal(indicador) {
   return IND_METAS[indicador] !== undefined ? IND_METAS[indicador] : (METAS_CONFIG[indicador]||{}).meta;
@@ -1083,13 +1063,12 @@ function renderUnidadeMultiselect() {
     : `Unidades: ${ativas.length} selecionadas <span class="ms-arrow">▾</span>`;
 }
 
-/* Paleta de cores para as unidades nos gráficos */
+/* Paleta de cores */
 const CHART_COLORS = [
   '#6B4FBB','#00B050','#1D4ED8','#DC2626','#F59E0B',
   '#0EA5E9','#8B5CF6','#EC4899','#14B8A6','#F97316'
 ];
 
-/* Instâncias de chart ativas — necessário para destruir antes de recriar */
 const CHART_INSTANCES = {};
 
 function destroyChart(id) {
@@ -1108,7 +1087,6 @@ function buildChart(canvasId, unidades, indicador) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
 
-  // Todos os meses disponíveis (union de todas as unidades)
   let todosMeses = [];
   unidades.forEach(u => {
     getMesesDisponiveis(u, indicador).forEach(m => {
@@ -1124,7 +1102,6 @@ function buildChart(canvasId, unidades, indicador) {
   const datasets = [];
 
   if (unidades.length === 1) {
-    // 1 unidade: barras únicas por mês, cor varia conforme atinge meta
     const u = unidades[0];
     const valores = todosMeses.map(m => {
       const r = IND_DADOS.find(d => d.unidade===u && d.indicador===indicador && d.mes===m);
@@ -1140,7 +1117,6 @@ function buildChart(canvasId, unidades, indicador) {
       order: 2
     });
   } else {
-    // N unidades: barras agrupadas por mês, uma cor por unidade
     unidades.forEach((u, i) => {
       const valores = todosMeses.map(m => {
         const r = IND_DADOS.find(d => d.unidade===u && d.indicador===indicador && d.mes===m);
@@ -1156,7 +1132,6 @@ function buildChart(canvasId, unidades, indicador) {
       });
     });
 
-    // Linha de média do grupo por mês
     const mediasPorMes = todosMeses.map(m => {
       const vals = unidades.map(u => {
         const r = IND_DADOS.find(d => d.unidade===u && d.indicador===indicador && d.mes===m);
@@ -1178,7 +1153,6 @@ function buildChart(canvasId, unidades, indicador) {
     });
   }
 
-  // Linha de meta (annotation via dataset de linha constante)
   datasets.push({
     type: 'line',
     label: `Meta ${mc.direcao === 'menor' ? 'Máx' : 'Mín'} (${formatIndValue(meta, indicador)})`,
@@ -1236,10 +1210,74 @@ function buildChart(canvasId, unidades, indicador) {
   });
 }
 
-let _indPendente = false; // true quando dados mudaram mas aba não estava visível
+/* ============================================================
+   RENDER ACUMULADO — cards de resumo anual por indicador
+   CORREÇÃO v5.04: função estava ausente no v5.03, causando
+   ReferenceError que abortava toda a renderização de indicadores
+============================================================ */
+function renderAcumulado(unidades) {
+  const inds = Object.keys(METAS_CONFIG);
+  const container = document.getElementById('acumuladoCards');
+  if (!unidades || unidades.length === 0) { container.innerHTML = ''; return; }
+
+  const cards = inds.map(ind => {
+    const mc = METAS_CONFIG[ind];
+    const meta = IND_METAS[ind] !== undefined ? IND_METAS[ind] : mc.meta;
+
+    let totalOk = 0, totalFora = 0;
+    let somaResultados = 0, countResultados = 0;
+
+    unidades.forEach(u => {
+      const meses = getMesesDisponiveis(u, ind);
+      if (!meses.length) return;
+      const ult = meses[meses.length - 1];
+      const row = IND_DADOS.find(d => d.unidade === u && d.indicador === ind && d.mes === ult);
+      if (!row) return;
+      somaResultados += row.resultado;
+      countResultados++;
+      const atingiu = mc.direcao === 'menor' ? row.resultado <= meta : row.resultado >= meta;
+      if (atingiu) totalOk++; else totalFora++;
+    });
+
+    const media = countResultados ? somaResultados / countResultados : null;
+    const mediaFmt = media !== null ? formatIndValue(media, ind) : '—';
+    const metaLabel = mc.direcao === 'menor' ? 'Meta máx' : 'Meta mín';
+    const metaFmt = formatIndValue(meta, ind);
+    const atingiuMedia = media !== null ? atingiuMeta(media, ind) : null;
+    const cls = atingiuMedia === null ? '' : atingiuMedia ? 'ok' : 'bad';
+
+    // Mês de referência: o mais recente com dados
+    let ultMesRef = '—';
+    const mesesRef = [];
+    unidades.forEach(u => {
+      const ms = getMesesDisponiveis(u, ind);
+      if (ms.length) mesesRef.push(ms[ms.length - 1]);
+    });
+    if (mesesRef.length) {
+      ultMesRef = mesesRef.sort((a, b) => MESES_ORDEM.indexOf(b) - MESES_ORDEM.indexOf(a))[0];
+    }
+
+    return `<div class="acc-card ${cls}">
+      <div class="acc-label">${ind}</div>
+      <div class="acc-value">${mediaFmt}</div>
+      <div class="acc-sub">
+        ${metaLabel}: ${metaFmt}
+        &nbsp;&middot;&nbsp;
+        <strong style="color:var(--green)">${totalOk}</strong> no meta
+        &nbsp;&middot;&nbsp;
+        <strong style="color:var(--red)">${totalFora}</strong> fora
+        &nbsp;&middot;&nbsp;
+        ref: ${ultMesRef}
+      </div>
+    </div>`;
+  });
+
+  container.innerHTML = cards.join('');
+}
+
+let _indPendente = false;
 
 function renderIndicadores() {
-  // Guarda: se ainda não tem dados, mostra empty e para
   if (IND_DADOS.length === 0) {
     document.getElementById('acumuladoCards').innerHTML = '';
     document.getElementById('indicadorCards').innerHTML =
@@ -1248,18 +1286,19 @@ function renderIndicadores() {
   }
 
   const abaAtiva = document.getElementById('view-indicadores').classList.contains('active');
-
-  // Se a aba não está visível, monta só o HTML e marca pendência
-  // Os charts serão criados quando o usuário clicar na aba
   const unidades = getUnidadesAtivas();
+
   if (unidades.length === 0) {
+    document.getElementById('acumuladoCards').innerHTML = '';
     document.getElementById('indicadorCards').innerHTML =
       '<div class="empty-state">Selecione ao menos uma unidade.</div>';
     return;
   }
 
-  const inds = stateInd.indicador === 'todos' ? Object.keys(METAS_CONFIG) : [stateInd.indicador];
+  // Renderiza cards de acumulado (sempre, independente da aba estar visível)
   renderAcumulado(unidades);
+
+  const inds = stateInd.indicador === 'todos' ? Object.keys(METAS_CONFIG) : [stateInd.indicador];
   const multiUnidade = unidades.length > 1;
 
   const cards = inds.map(indicador => {
@@ -1289,7 +1328,6 @@ function renderIndicadores() {
     : '<div class="empty-state">Nenhum dado disponível para esse filtro.</div>';
 
   if (!abaAtiva) {
-    // Aba escondida: marca pendência, charts serão criados ao ativar a aba
     _indPendente = true;
     return;
   }
@@ -1298,15 +1336,20 @@ function renderIndicadores() {
   _buildAllCharts(inds, unidades);
 }
 
-function _buildAllCharts(inds, unidades) {
+/* CORREÇÃO v5.04: resolvedInds e resolvedUnidades calculados antes do setTimeout
+   para evitar closure em variáveis mutáveis */
+function _buildAllCharts(indsParam, unidadesParam) {
+  const resolvedInds = indsParam || (stateInd.indicador === 'todos' ? Object.keys(METAS_CONFIG) : [stateInd.indicador]);
+  const resolvedUnidades = unidadesParam || getUnidadesAtivas();
   setTimeout(() => {
-    (inds || (stateInd.indicador === 'todos' ? Object.keys(METAS_CONFIG) : [stateInd.indicador])).forEach(indicador => {
-      const u = unidades || getUnidadesAtivas();
-      const temDados = u.some(un => getMesesDisponiveis(un, indicador).length > 0);
+    resolvedInds.forEach(indicador => {
+      const temDados = resolvedUnidades.some(un => getMesesDisponiveis(un, indicador).length > 0);
       if (!temDados) return;
       const canvasId = 'chart-' + indicador.replace(/[^a-z0-9]/gi, '_');
-      buildChart(canvasId, u, indicador);
+      buildChart(canvasId, resolvedUnidades, indicador);
     });
+    // Garante acumulado visível ao ativar a aba (caso viesse de _indPendente)
+    if (!indsParam) renderAcumulado(resolvedUnidades);
   }, 60);
 }
 
@@ -1352,13 +1395,12 @@ function initTheme() {
 }
 document.getElementById('themeToggle').addEventListener('click', () => {
   applyTheme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light');
-  // Recria os gráficos com as novas cores de tema
   if (document.getElementById('view-indicadores').classList.contains('active')) {
     renderIndicadores();
   }
 });
 initTheme();
-updateLastUpdate(); // versão e data sempre visíveis, independente da API
+updateLastUpdate();
 
 /* ============================================================
    INIT
