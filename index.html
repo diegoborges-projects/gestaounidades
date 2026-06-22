@@ -256,31 +256,16 @@
   .toast.error{background:var(--red);}
   footer{padding:16px 36px 28px;font-size:11.5px;color:var(--ink-soft);}
 
-
-  /* MAPA LEAFLET */
-  .map-wrap{padding:0 36px 22px;}
-  .map-outer{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;}
-  .map-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px 0;}
-  .map-header-title{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);font-weight:bold;}
-  .map-header-legend{display:flex;gap:14px;align-items:center;}
-  .map-leg-item{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:bold;color:var(--ink-soft);}
-  .map-leg-dot{width:9px;height:9px;border-radius:50%;}
-  #leafletMap{height:440px;width:100%;border-radius:0 0 10px 10px;}
-  /* Customiza popup Leaflet */
-  .leaflet-popup-content-wrapper{border-radius:8px!important;box-shadow:0 8px 24px rgba(0,0,0,.15)!important;font-family:Arial,sans-serif!important;padding:0!important;}
-  .leaflet-popup-content{margin:0!important;padding:0!important;}
-  .map-popup{padding:12px 14px;min-width:170px;}
-  .map-popup-name{font-weight:bold;font-size:13px;color:#1A2238;margin-bottom:5px;}
-  .map-popup-row{font-size:12px;color:#5B647A;margin-bottom:2px;}
-  .map-popup-therm{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:bold;padding:3px 9px;border-radius:20px;margin-top:5px;}
-  .map-popup-therm.crit{background:#FDECEC;color:#DC2626;}
-  .map-popup-therm.att{background:#FEF3E0;color:#B9790A;}
-  .map-popup-therm.saud{background:#E6F7EC;color:#0A7C3E;}
-
+  @media (max-width:880px){
+    .main-grid{grid-template-columns:1fr;}
+    .kpis,#kpiRowTask{grid-template-columns:repeat(2,1fr);}
+    #acumuladoCards{grid-template-columns:1fr;}
+    .ind-grid{grid-template-columns:1fr;}
+    .header-meta{text-align:left;}
+    .field-row{grid-template-columns:1fr;}
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 </head>
 <body>
 
@@ -299,7 +284,7 @@
     <div class="header-meta">
       <div class="version-bar" style="justify-content:flex-end;">
         <span class="pill"><span class="pill-update" id="lastUpdatePill">carregando...</span></span>
-        <span class="pill" id="versionPill">v5.06</span>
+        <span class="pill" id="versionPill">v5.04</span>
         <button class="theme-toggle" id="themeToggle" title="Alternar tema" aria-label="Alternar tema claro/escuro"><span class="knob"></span></button>
       </div>
     </div>
@@ -328,21 +313,7 @@
       <button class="filter-btn" data-therm="Saudável">Saudável</button>
     </div>
   </div>
-  <!-- MAPA LEAFLET -->
-  <div class="map-wrap">
-    <div class="map-outer">
-      <div class="map-header">
-        <span class="map-header-title">Distribuição geográfica — farol por unidade</span>
-        <div class="map-header-legend">
-          <span class="map-leg-item"><span class="map-leg-dot" style="background:#00B050"></span>Saudável</span>
-          <span class="map-leg-item"><span class="map-leg-dot" style="background:#F59E0B"></span>Atenção</span>
-          <span class="map-leg-item"><span class="map-leg-dot" style="background:#DC2626"></span>Crítico</span>
-        </div>
-      </div>
-      <div id="leafletMap"></div>
-    </div>
-  </div>
-    <div class="main-grid">
+  <div class="main-grid">
     <aside class="sidebar"><h2>Regionais (GRP)</h2><div id="regionalListExec"></div></aside>
     <div class="table-card">
       <table><thead><tr>
@@ -503,8 +474,8 @@
    CONFIG
 ============================================================ */
 const API_URL = "https://script.google.com/macros/s/AKfycbwf_y3YlYk0enGa2XZqNEfplsjiufIgrq9CjP1BM1TWTXGPqdnyhiVXU-ic7aRfQnya/exec";
-const APP_VERSION = "5.06";
-const LAST_UPDATE = "2026-06-22T14:00:00";
+const APP_VERSION = "5.04";
+const LAST_UPDATE = "2026-06-19T14:00:00";
 
 const METAS_CONFIG = {
   'Churn':            { meta:0.7, direcao:'menor', formato:'decimal', sufixo:'%' },
@@ -535,7 +506,6 @@ async function fetchAll(silent = false) {
 
     setSyncStatus(true, `Dados atualizados · ${UNIDADES.length} unidades · ${TASKS.length} tarefa(s)`);
     renderAllExec();
-    buildLeafletMap();
     renderAllTasks();
     renderUnidadeMultiselect();
     renderIndicadores();
@@ -569,7 +539,6 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.add('active');
     const view = btn.getAttribute('data-view');
     document.getElementById('view-' + view).classList.add('active');
-    if (view === 'executivo') { if (_leafletMap) { setTimeout(() => _leafletMap.invalidateSize(), 60); } }
     if (view === 'indicadores') {
       // Reconstrói os charts sempre que a aba é ativada
       // (DOM precisa estar visível para Chart.js calcular dimensões)
@@ -682,7 +651,6 @@ function renderAllExec() {
       const r = el.getAttribute('data-regional');
       stateExec.regional = stateExec.regional === r ? null : r;
       renderAllExec();
-      buildLeafletMap();
     });
   });
 
@@ -702,14 +670,14 @@ function renderAllExec() {
   }).join('');
 }
 
-document.getElementById('searchInputExec').addEventListener('input', e => { stateExec.search = e.target.value; renderAllExec(); buildLeafletMap(); });
+document.getElementById('searchInputExec').addEventListener('input', e => { stateExec.search = e.target.value; renderAllExec(); });
 document.querySelectorAll('#tipoFilterExec .filter-btn').forEach(btn => btn.addEventListener('click', () => {
   document.querySelectorAll('#tipoFilterExec .filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active'); stateExec.tipo = btn.getAttribute('data-tipo'); renderAllExec(); buildLeafletMap();
+  btn.classList.add('active'); stateExec.tipo = btn.getAttribute('data-tipo'); renderAllExec();
 }));
 document.querySelectorAll('#thermFilterExec .filter-btn').forEach(btn => btn.addEventListener('click', () => {
   document.querySelectorAll('#thermFilterExec .filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active'); stateExec.therm = btn.getAttribute('data-therm'); renderAllExec(); buildLeafletMap();
+  btn.classList.add('active'); stateExec.therm = btn.getAttribute('data-therm'); renderAllExec();
 }));
 document.querySelectorAll('#view-executivo thead th[data-sort]').forEach(th => th.addEventListener('click', () => {
   const key = th.getAttribute('data-sort');
@@ -1010,205 +978,8 @@ document.getElementById('btnSaveTask').addEventListener('click', async () => {
 });
 
 /* ============================================================
-   MAPA LEAFLET — pino por unidade, cor pelo termômetro
+   VIEW 3: INDICADORES — FUNÇÕES AUXILIARES
 ============================================================ */
-
-/* Dicionário cidade → [lat, lng] */
-const CIDADE_LATLNG = {
-  // SP
-  'são paulo':[-23.55,-46.63],'sao paulo':[-23.55,-46.63],
-  'campinas':[-22.90,-47.06],'ribeirão preto':[-21.17,-47.81],'ribeirao preto':[-21.17,-47.81],
-  'sorocaba':[-23.50,-47.46],'santos':[-23.96,-46.33],'bauru':[-22.31,-49.07],
-  'taubaté':[-23.02,-45.55],'taubate':[-23.02,-45.55],'piracicaba':[-22.72,-47.65],
-  'jundiaí':[-23.18,-46.88],'jundiai':[-23.18,-46.88],'são bernardo':[-23.69,-46.56],
-  'são josé dos campos':[-23.18,-45.88],'sjc':[-23.18,-45.88],
-  'mogi das cruzes':[-23.52,-46.18],'osasco':[-23.53,-46.79],'guarulhos':[-23.46,-46.53],
-  'abc paulista':[-23.67,-46.53],'abc':[-23.67,-46.53],'alphaville':[-23.50,-46.85],
-  'sp moema':[-23.60,-46.66],'moema':[-23.60,-46.66],
-  // RJ
-  'rio de janeiro':[-22.91,-43.17],'niterói':[-22.88,-43.10],'niteroi':[-22.88,-43.10],
-  'nova friburgo':[-22.28,-42.53],'petrópolis':[-22.50,-43.18],'petropolis':[-22.50,-43.18],
-  'volta redonda':[-22.52,-44.10],'campos dos goytacazes':[-21.76,-41.33],
-  // MG
-  'belo horizonte':[-19.92,-43.94],'uberlândia':[-18.91,-48.27],'uberlandia':[-18.91,-48.27],
-  'juiz de fora':[-21.76,-43.35],'montes claros':[-16.73,-43.86],'contagem':[-19.93,-44.05],
-  'betim':[-19.97,-44.20],'governador valadares':[-18.85,-41.95],'uberaba':[-19.75,-47.93],
-  'divinópolis':[-20.14,-44.88],'divinopolis':[-20.14,-44.88],
-  // ES
-  'vitória':[-20.32,-40.34],'vitoria':[-20.32,-40.34],'vila velha':[-20.33,-40.29],'serra':[-20.12,-40.30],
-  // DF
-  'brasília':[-15.78,-47.93],'brasilia':[-15.78,-47.93],'taguatinga':[-15.84,-48.05],
-  // GO
-  'goiânia':[-16.68,-49.25],'goiania':[-16.68,-49.25],'anápolis':[-16.33,-48.95],'anapolis':[-16.33,-48.95],
-  // MT
-  'cuiabá':[-15.60,-56.10],'cuiaba':[-15.60,-56.10],'várzea grande':[-15.65,-56.13],
-  // MS
-  'campo grande':[-20.44,-54.65],'dourados':[-22.22,-54.81],
-  // PR
-  'curitiba':[-25.43,-49.27],'londrina':[-23.30,-51.16],'maringá':[-23.42,-51.93],
-  'maringa':[-23.42,-51.93],'cascavel':[-24.96,-53.45],'foz do iguaçu':[-25.54,-54.58],
-  // SC
-  'florianópolis':[-27.59,-48.55],'florianopolis':[-27.59,-48.55],'joinville':[-26.30,-48.84],
-  'blumenau':[-26.92,-49.07],'chapecó':[-27.10,-52.62],'chapeco':[-27.10,-52.62],
-  // RS
-  'porto alegre':[-30.03,-51.23],'caxias do sul':[-29.17,-51.18],'pelotas':[-31.76,-52.34],
-  'canoas':[-29.92,-51.18],'santa maria':[-29.69,-53.81],
-  // BA
-  'salvador':[-12.97,-38.50],'feira de santana':[-12.27,-38.97],'vitória da conquista':[-14.87,-40.85],
-  'ilhéus':[-14.79,-39.04],'ilheus':[-14.79,-39.04],
-  // PE
-  'recife':[-8.05,-34.88],'caruaru':[-8.28,-35.98],'petrolina':[-9.39,-40.50],'olinda':[-7.99,-34.85],
-  // CE
-  'fortaleza':[-3.72,-38.54],'caucaia':[-3.74,-38.66],'juazeiro do norte':[-7.21,-39.31],
-  // RN
-  'natal':[-5.80,-35.21],'mossoró':[-5.19,-37.34],'mossoro':[-5.19,-37.34],
-  // PB
-  'joão pessoa':[-7.12,-34.86],'joao pessoa':[-7.12,-34.86],'campina grande':[-7.23,-35.88],
-  // AL
-  'maceió':[-9.67,-35.74],'maceio':[-9.67,-35.74],'arapiraca':[-9.75,-36.66],
-  // SE
-  'aracaju':[-10.91,-37.07],
-  // MA
-  'são luís':[-2.53,-44.30],'sao luis':[-2.53,-44.30],'imperatriz':[-5.53,-47.48],
-  // PI
-  'teresina':[-5.09,-42.80],
-  // PA
-  'belém':[-1.46,-48.50],'belem':[-1.46,-48.50],'santarém':[-2.44,-54.71],'santarem':[-2.44,-54.71],
-  // AM
-  'manaus':[-3.10,-60.02],'parintins':[-2.63,-56.74],
-  // AP
-  'macapá':[-0.03,-51.07],'macapa':[-0.03,-51.07],
-  // RO
-  'porto velho':[-8.76,-63.90],
-  // AC
-  'rio branco':[-9.97,-67.81],
-  // RR
-  'boa vista':[2.82,-60.67],
-  // TO
-  'palmas':[-10.25,-48.32],
-  // MT
-  'sinop':[-11.86,-55.50],
-};
-
-/* UF → lat/lng (centroide) — fallback se não detectar cidade */
-const UF_CENTER = {
-  AC:[-9.02,-70.81],AL:[-9.57,-36.78],AP:[0.90,-51.99],AM:[-3.47,-65.10],
-  BA:[-12.97,-41.73],CE:[-5.50,-39.32],DF:[-15.78,-47.93],ES:[-19.19,-40.34],
-  GO:[-15.83,-49.62],MA:[-5.42,-45.44],MT:[-12.64,-55.42],MS:[-20.51,-54.54],
-  MG:[-18.51,-44.55],PA:[-3.79,-52.48],PB:[-7.12,-36.72],PR:[-24.89,-51.55],
-  PE:[-8.38,-37.86],PI:[-7.72,-42.73],RJ:[-22.25,-42.66],RN:[-5.81,-36.59],
-  RS:[-30.03,-53.23],RO:[-10.83,-63.34],RR:[1.99,-61.33],SC:[-27.45,-50.94],
-  SP:[-22.25,-48.63],SE:[-10.57,-37.45],TO:[-10.17,-48.33],
-};
-
-/* Regiões do Brasil → lat/lng — último fallback por ordem de regional */
-const REGION_FALLBACKS = [
-  [-23.55,-46.63],[-19.92,-43.94],[-15.78,-47.93],[-30.03,-51.23],[-12.97,-38.50],
-  [-3.72,-38.54],[-8.05,-34.88],[-25.43,-49.27],[-1.46,-48.50],[-3.10,-60.02],
-];
-
-let _leafletMap = null;
-let _leafletMarkers = [];
-
-function detectLatLng(nome) {
-  const lower = nome.toLowerCase();
-  // 1. Nome de cidade
-  for (const [cidade, ll] of Object.entries(CIDADE_LATLNG)) {
-    if (lower.includes(cidade)) return ll;
-  }
-  // 2. Sigla de UF no nome (ex: "BP GO", "FILIAL-MG")
-  for (const [uf, ll] of Object.entries(UF_CENTER)) {
-    if (new RegExp('\\b' + uf + '\\b').test(nome.toUpperCase())) return ll;
-  }
-  return null;
-}
-
-function thermClass(t) {
-  if (t === 'Crítico') return 'crit';
-  if (t === 'Atenção') return 'att';
-  return 'saud';
-}
-function thermColor(t) {
-  if (t === 'Crítico') return '#DC2626';
-  if (t === 'Atenção') return '#F59E0B';
-  return '#00B050';
-}
-
-function buildLeafletMap() {
-  // Inicializa mapa uma única vez
-  if (!_leafletMap) {
-    _leafletMap = L.map('leafletMap', {
-      center: [-14.2, -51.9],
-      zoom: 4,
-      zoomControl: true,
-      scrollWheelZoom: false,
-    });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '© OpenStreetMap contributors © CARTO',
-      subdomains: 'abcd',
-      maxZoom: 18,
-    }).addTo(_leafletMap);
-  }
-
-  // Remove marcadores anteriores
-  _leafletMarkers.forEach(m => m.remove());
-  _leafletMarkers = [];
-
-  if (!UNIDADES.length) return;
-
-  // Aplica filtros atuais para destacar visualmente
-  const filtradas = applyFiltersExec();
-  const filtSet = new Set(filtradas.map(u => u.unidade));
-
-  let fallbackIdx = 0;
-
-  UNIDADES.forEach(u => {
-    let ll = detectLatLng(u.unidade);
-    if (!ll) {
-      ll = REGION_FALLBACKS[fallbackIdx % REGION_FALLBACKS.length];
-      fallbackIdx++;
-    }
-
-    const cor    = thermColor(u.termometro);
-    const cls    = thermClass(u.termometro);
-    const opaque = filtSet.has(u.unidade) ? 1 : 0.25;
-    const size   = filtSet.has(u.unidade) ? 13 : 10;
-
-    const icon = L.divIcon({
-      className: '',
-      html: `<div style="
-        width:${size * 2}px;height:${size * 2}px;
-        background:${cor};
-        border:2.5px solid #fff;
-        border-radius:50%;
-        box-shadow:0 2px 6px rgba(0,0,0,.35);
-        opacity:${opaque};
-        display:flex;align-items:center;justify-content:center;
-        font-family:Arial,sans-serif;font-size:8px;font-weight:bold;color:#fff;
-      ">${u.tipo === 'BP' ? 'BP' : ''}</div>`,
-      iconSize: [size * 2, size * 2],
-      iconAnchor: [size, size],
-      popupAnchor: [0, -(size + 4)],
-    });
-
-    const marker = L.marker(ll, { icon });
-
-    const thermLabel = u.termometro === 'Crítico' ? 'Crítico' : u.termometro === 'Atenção' ? 'Atenção' : 'Saudável';
-    marker.bindPopup(`
-      <div class="map-popup">
-        <div class="map-popup-name">${u.unidade}</div>
-        <div class="map-popup-row">Regional: <strong>${u.regional}</strong></div>
-        <div class="map-popup-row">Tipo: <strong>${u.tipo}</strong></div>
-        <div class="map-popup-row">Vol. Fase 1: <strong>${u.volume_fase1}</strong></div>
-        <span class="map-popup-therm ${cls}">${thermLabel}</span>
-      </div>`, { maxWidth: 220 }
-    );
-
-    marker.addTo(_leafletMap);
-    _leafletMarkers.push(marker);
-  });
-}
-
 let stateInd = { unidadesSelecionadas:null, indicador:'todos', mostrarVariacao:true };
 
 function getUnidadesInd() { return [...new Set(IND_DADOS.map(d => d.unidade))].sort(); }
