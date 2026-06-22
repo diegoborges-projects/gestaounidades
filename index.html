@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gestão de Unidades — Central de Projetos v5.04</title>
+<title>Gestão de Unidades — Central de Projetos</title>
 <style>
   :root{
     --navy:#1E2761; --navy-dark:#233D54;
@@ -179,17 +179,6 @@
   [data-theme="dark"] .evo-up{background:#16331F;}
   [data-theme="dark"] .evo-down{background:#3A1313;}
   [data-theme="dark"] .evo-flat{background:#262C42;}
-  .bar-chart{display:flex;align-items:flex-end;gap:10px;height:110px;position:relative;}
-  .bar-chart::before{content:'';position:absolute;left:0;right:0;bottom:var(--meta-line,50%);border-top:2px dashed var(--amber);z-index:0;}
-  .avg-line{position:absolute;left:0;right:0;border-top:2px dashed #1D4ED8;z-index:0;}
-  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;position:relative;z-index:1;}
-  .bar-value{font-size:11px;font-weight:bold;margin-bottom:4px;color:var(--ink);}
-  .bar-fill{width:100%;max-width:44px;border-radius:5px 5px 0 0;}
-  .bar-fill.ok{background:var(--green);}
-  .bar-fill.bad{background:var(--red);}
-  .bar-label{font-size:10px;color:var(--ink-soft);margin-top:6px;font-weight:bold;text-align:center;max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .meta-tag{font-size:10px;color:var(--amber);font-weight:bold;margin-top:4px;}
-  .avg-tag{font-size:10px;color:#1D4ED8;font-weight:bold;margin-top:2px;}
   .toggle-btn{display:inline-flex;align-items:center;gap:8px;position:relative;padding-left:48px;}
   .toggle-btn::before{content:'';width:30px;height:17px;border-radius:10px;background:var(--line);position:absolute;left:10px;top:50%;transform:translateY(-50%);transition:background .2s;}
   .toggle-btn::after{content:'';position:absolute;width:13px;height:13px;border-radius:50%;background:#fff;top:50%;transform:translateY(-50%);transition:left .2s;}
@@ -267,6 +256,47 @@
   .toast.error{background:var(--red);}
   footer{padding:16px 36px 28px;font-size:11.5px;color:var(--ink-soft);}
 
+  /* MAPA BRASIL */
+  .map-section{display:grid;grid-template-columns:1fr 320px;gap:18px;padding:0 36px 22px;align-items:start;}
+  .map-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;position:relative;}
+  .map-card-title{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);font-weight:bold;margin:0 0 14px;}
+  .map-svg-wrap{position:relative;width:100%;max-width:520px;margin:0 auto;}
+  #brazilMapSvg{width:100%;height:auto;display:block;}
+  #brazilMapSvg .estado{fill:#E8ECF5;stroke:#fff;stroke-width:1.2;transition:fill .2s;}
+  [data-theme="dark"] #brazilMapSvg .estado{fill:#222942;stroke:#11151F;}
+  #brazilMapSvg .estado:hover{fill:var(--ice);cursor:default;}
+  .map-marker{cursor:pointer;transition:transform .15s;}
+  .map-marker:hover{transform:scale(1.25);}
+  .map-marker circle.bg{opacity:.18;}
+  .map-marker.crit circle.bg{fill:var(--red);}
+  .map-marker.att  circle.bg{fill:var(--amber);}
+  .map-marker.saud circle.bg{fill:var(--green);}
+  .map-marker.mixed circle.bg{fill:var(--navy);}
+  .map-marker circle.core{stroke:#fff;stroke-width:1.5;}
+  .map-marker.crit circle.core{fill:var(--red);}
+  .map-marker.att  circle.core{fill:var(--amber);}
+  .map-marker.saud circle.core{fill:var(--green);}
+  .map-marker.mixed circle.core{fill:var(--navy);}
+  .map-marker text{fill:#fff;font-family:Arial,sans-serif;font-weight:bold;font-size:9px;text-anchor:middle;dominant-baseline:central;pointer-events:none;}
+  .map-tooltip{position:absolute;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 13px;font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.15);pointer-events:none;display:none;z-index:20;min-width:180px;max-width:240px;}
+  .map-tooltip.show{display:block;}
+  .map-tooltip-name{font-weight:bold;font-size:12.5px;color:var(--ink);margin-bottom:6px;}
+  .map-tooltip-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:11.5px;color:var(--ink-soft);}
+  .map-tooltip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .map-legend-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;}
+  .map-legend-title{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);font-weight:bold;margin:0 0 14px;}
+  .map-legend-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;margin-bottom:4px;border:1px solid transparent;transition:background .15s;}
+  .map-legend-row:hover{background:var(--ice);}
+  .map-legend-row.sel{background:var(--navy);color:#fff;}
+  .map-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .map-legend-label{font-size:13px;font-weight:bold;flex:1;}
+  .map-legend-count{font-size:11.5px;background:rgba(30,39,97,.08);padding:2px 8px;border-radius:20px;font-weight:bold;}
+  .map-legend-row.sel .map-legend-count{background:rgba(255,255,255,.2);color:#fff;}
+  .map-legend-row.sel .map-legend-label{color:#fff;}
+  .map-legend-divider{border-top:1px solid var(--line);margin:10px 0;}
+  .map-legend-summary{font-size:11.5px;color:var(--ink-soft);line-height:1.6;}
+  .map-legend-summary strong{color:var(--ink);}
+
   @media (max-width:880px){
     .main-grid{grid-template-columns:1fr;}
     .kpis,#kpiRowTask{grid-template-columns:repeat(2,1fr);}
@@ -274,6 +304,7 @@
     .ind-grid{grid-template-columns:1fr;}
     .header-meta{text-align:left;}
     .field-row{grid-template-columns:1fr;}
+    .map-section{grid-template-columns:1fr;}
   }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -295,7 +326,7 @@
     <div class="header-meta">
       <div class="version-bar" style="justify-content:flex-end;">
         <span class="pill"><span class="pill-update" id="lastUpdatePill">carregando...</span></span>
-        <span class="pill" id="versionPill">v5.04</span>
+        <span class="pill" id="versionPill">v5.05</span>
         <button class="theme-toggle" id="themeToggle" title="Alternar tema" aria-label="Alternar tema claro/escuro"><span class="knob"></span></button>
       </div>
     </div>
@@ -322,6 +353,22 @@
       <button class="filter-btn" data-therm="Crítico">Crítico</button>
       <button class="filter-btn" data-therm="Atenção">Atenção</button>
       <button class="filter-btn" data-therm="Saudável">Saudável</button>
+    </div>
+  </div>
+  <!-- MAPA BRASIL -->
+  <div class="map-section">
+    <div class="map-card">
+      <p class="map-card-title">Distribuição geográfica — farol por regional</p>
+      <div class="map-svg-wrap" id="mapWrap">
+        <svg id="brazilMapSvg" viewBox="0 0 500 580" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="map-tooltip" id="mapTooltip"></div>
+      </div>
+    </div>
+    <div class="map-legend-card">
+      <p class="map-legend-title">Regionais (GRP)</p>
+      <div id="mapLegendList"></div>
+      <div class="map-legend-divider"></div>
+      <div class="map-legend-summary" id="mapLegendSummary"></div>
     </div>
   </div>
   <div class="main-grid">
@@ -485,8 +532,8 @@
    CONFIG
 ============================================================ */
 const API_URL = "https://script.google.com/macros/s/AKfycbwf_y3YlYk0enGa2XZqNEfplsjiufIgrq9CjP1BM1TWTXGPqdnyhiVXU-ic7aRfQnya/exec";
-const APP_VERSION = "5.04";
-const LAST_UPDATE = "2026-06-19T14:00:00";
+const APP_VERSION = "5.05";
+const LAST_UPDATE = "2026-06-22T10:00:00";
 
 const METAS_CONFIG = {
   'Churn':            { meta:0.7, direcao:'menor', formato:'decimal', sufixo:'%' },
@@ -495,7 +542,6 @@ const METAS_CONFIG = {
 };
 const MESES_ORDEM = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
-/* Estado global — populado pela API */
 let UNIDADES  = [];
 let TASKS     = [];
 let IND_DADOS = [];
@@ -518,6 +564,7 @@ async function fetchAll(silent = false) {
 
     setSyncStatus(true, `Dados atualizados · ${UNIDADES.length} unidades · ${TASKS.length} tarefa(s)`);
     renderAllExec();
+    buildBrazilMap();
     renderAllTasks();
     renderUnidadeMultiselect();
     renderIndicadores();
@@ -552,12 +599,9 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     const view = btn.getAttribute('data-view');
     document.getElementById('view-' + view).classList.add('active');
     if (view === 'indicadores') {
-      if (_indPendente) {
-        _indPendente = false;
-        _buildAllCharts();
-      } else {
-        renderIndicadores();
-      }
+      // Reconstrói os charts sempre que a aba é ativada
+      // (DOM precisa estar visível para Chart.js calcular dimensões)
+      _buildAllCharts();
     }
     if (view === 'tarefas') renderAllTasks();
   });
@@ -600,7 +644,7 @@ function showToast(msg, isError) {
 }
 function formatIndValue(valor, indicador) {
   const mc = METAS_CONFIG[indicador];
-  if (!mc) return String(valor);
+  if (!mc || valor === null || valor === undefined) return '—';
   return mc.formato === 'decimal'
     ? valor.toFixed(1).replace('.', ',') + (mc.sufixo||'')
     : Math.round(valor) + (mc.sufixo||'');
@@ -666,6 +710,7 @@ function renderAllExec() {
       const r = el.getAttribute('data-regional');
       stateExec.regional = stateExec.regional === r ? null : r;
       renderAllExec();
+      buildBrazilMap();
     });
   });
 
@@ -937,7 +982,7 @@ document.getElementById('btnViewKanban').addEventListener('click', () => {
   renderAllTasks();
 });
 
-/* MODAL TAREFA */
+/* MODAL */
 const modalOverlay = document.getElementById('modalOverlay');
 function getUnidadesPorRegional(r) { return UNIDADES.filter(u => u.regional === r); }
 function populateRegionalSelect() {
@@ -993,19 +1038,295 @@ document.getElementById('btnSaveTask').addEventListener('click', async () => {
 });
 
 /* ============================================================
-   VIEW 3: INDICADORES — UTILITÁRIOS
+   MAPA BRASIL — estados SVG + marcadores por regional
 ============================================================ */
+
+/* Coordenadas SVG por UF (viewBox 0 0 500 580) */
+const UF_COORDS = {
+  AC:(100,205), AL:(415,207), AP:(282,92),  AM:(130,135),
+  BA:(365,242), CE:(383,148), DF:(291,278), ES:(372,302),
+  GO:(276,272), MA:(313,138), MT:(198,248), MS:(218,313),
+  MG:(322,292), PA:(232,148), PB:(418,177), PR:(272,362),
+  PE:(402,193), PI:(342,168), RJ:(346,332), RN:(418,163),
+  RS:(257,422), RO:(168,228), RR:(157,83),  SC:(272,392),
+  SP:(291,332), SE:(412,222), TO:(282,203),
+};
+
+/* Palavras-chave de cidades → UF */
+const CIDADE_UF_MAP = {
+  'são paulo':'SP','sao paulo':'SP','campinas':'SP','ribeirão preto':'SP',
+  'ribeirao preto':'SP','santos':'SP','sorocaba':'SP','bauru':'SP',
+  'taubaté':'SP','taubate':'SP','piracicaba':'SP','jundiaí':'SP','jundiai':'SP',
+  'rio de janeiro':'RJ','niterói':'RJ','niteroi':'RJ','nova friburgo':'RJ',
+  'petropolis':'RJ','petrópolis':'RJ','volta redonda':'RJ',
+  'belo horizonte':'MG','uberlândia':'MG','uberlandia':'MG','juiz de fora':'MG',
+  'montes claros':'MG','contagem':'MG','betim':'MG','governador valadares':'MG',
+  'brasília':'DF','brasilia':'DF','taguatinga':'DF','ceilândia':'DF',
+  'goiânia':'GO','goiania':'GO','anápolis':'GO','anapolis':'GO',
+  'curitiba':'PR','londrina':'PR','maringá':'PR','maringa':'PR','cascavel':'PR',
+  'florianópolis':'SC','florianopolis':'SC','joinville':'SC','blumenau':'SC',
+  'porto alegre':'RS','caxias do sul':'RS','pelotas':'RS','canoas':'RS',
+  'salvador':'BA','feira de santana':'BA','vitória da conquista':'BA',
+  'recife':'PE','caruaru':'PE','petrolina':'PE',
+  'fortaleza':'CE','caucaia':'CE','juazeiro do norte':'CE',
+  'natal':'RN','mossoró':'RN','mossoro':'RN',
+  'joão pessoa':'PB','joao pessoa':'PB','campina grande':'PB',
+  'maceió':'AL','maceio':'AL','arapiraca':'AL',
+  'aracaju':'SE',
+  'manaus':'AM','parintins':'AM',
+  'belém':'PA','belem':'PA','santarém':'PA','santarem':'PA',
+  'macapá':'AP','macapa':'AP',
+  'porto velho':'RO',
+  'rio branco':'AC',
+  'boa vista':'RR',
+  'palmas':'TO',
+  'são luís':'MA','sao luis':'MA','imperatriz':'MA',
+  'teresina':'PI',
+  'campo grande':'MS','dourados':'MS',
+  'cuiabá':'MT','cuiaba':'MT','várzea grande':'MT',
+  'vitória':'ES','vitoria':'ES','vila velha':'ES','serra':'ES',
+};
+
+/* Paths SVG dos estados do Brasil */
+const ESTADO_PATHS = {
+  AC:"M 98 195 L 75 190 L 68 198 L 72 208 L 90 215 L 110 218 L 122 212 L 115 200 Z",
+  AL:"M 408 200 L 418 200 L 422 207 L 420 215 L 410 215 L 405 208 Z",
+  AP:"M 272 82 L 285 78 L 295 88 L 290 100 L 278 100 L 268 92 Z",
+  AM:"M 80 115 L 100 105 L 130 100 L 165 108 L 178 125 L 175 148 L 165 162 L 148 168 L 128 165 L 105 155 L 82 148 L 72 132 Z",
+  BA:"M 318 210 L 355 205 L 385 215 L 398 230 L 400 255 L 388 270 L 368 278 L 345 272 L 325 258 L 312 240 L 310 222 Z",
+  CE:"M 360 135 L 385 130 L 400 138 L 405 152 L 395 162 L 375 162 L 360 155 L 355 143 Z",
+  DF:"M 287 272 L 295 272 L 295 283 L 287 283 Z",
+  ES:"M 358 288 L 372 285 L 382 295 L 380 310 L 368 315 L 355 305 L 353 294 Z",
+  GO:"M 252 248 L 282 242 L 305 252 L 312 270 L 308 292 L 290 300 L 268 295 L 250 278 L 248 260 Z",
+  MA:"M 288 120 L 320 115 L 338 125 L 340 142 L 330 155 L 312 158 L 294 150 L 282 135 Z",
+  MT:"M 155 215 L 198 210 L 230 218 L 238 240 L 232 268 L 210 278 L 182 275 L 158 262 L 148 240 L 148 222 Z",
+  MS:"M 185 290 L 220 285 L 248 295 L 252 318 L 242 338 L 218 342 L 192 332 L 178 312 L 180 296 Z",
+  MG:"M 290 258 L 330 252 L 360 262 L 370 280 L 368 308 L 348 320 L 318 322 L 295 312 L 278 295 L 278 272 Z",
+  PA:"M 188 115 L 228 108 L 268 112 L 285 130 L 280 152 L 260 165 L 235 168 L 210 160 L 188 145 L 178 128 Z",
+  PB:"M 400 168 L 422 165 L 428 175 L 422 182 L 405 182 L 396 175 Z",
+  PR:"M 238 345 L 278 338 L 305 348 L 308 368 L 292 378 L 260 378 L 238 365 L 232 352 Z",
+  PE:"M 356 182 L 395 178 L 412 185 L 415 198 L 400 202 L 370 205 L 352 198 L 348 188 Z",
+  PI:"M 322 150 L 352 145 L 362 158 L 358 178 L 342 185 L 322 180 L 310 168 L 312 155 Z",
+  RJ:"M 322 318 L 348 312 L 368 318 L 372 332 L 360 342 L 335 342 L 318 332 L 318 322 Z",
+  RN:"M 395 150 L 420 148 L 428 158 L 422 168 L 405 168 L 392 162 L 390 153 Z",
+  RS:"M 228 398 L 268 390 L 292 400 L 295 422 L 278 438 L 248 440 L 228 428 L 220 412 Z",
+  RO:"M 130 202 L 162 195 L 180 205 L 185 228 L 175 248 L 150 252 L 128 240 L 120 220 Z",
+  RR:"M 135 68 L 162 62 L 175 75 L 172 92 L 155 100 L 132 98 L 122 82 Z",
+  SC:"M 238 378 L 275 372 L 298 380 L 298 398 L 280 408 L 248 408 L 232 395 Z",
+  SP:"M 252 298 L 295 292 L 322 302 L 325 325 L 308 340 L 278 342 L 250 330 L 240 312 L 245 300 Z",
+  SE:"M 395 212 L 418 210 L 425 220 L 418 230 L 400 230 L 392 220 Z",
+  TO:"M 258 172 L 292 168 L 308 182 L 308 210 L 295 222 L 270 222 L 252 208 L 248 188 Z",
+};
+
+/* Posições de fallback para regionais sem UF detectado (distribui pelo território) */
+const FALLBACK_POSITIONS = [
+  [250,290],[320,320],[270,360],[380,230],[290,170],
+  [180,240],[310,140],[150,130],[230,140],[370,300],
+];
+
+function detectUfFromName(name) {
+  const lower = name.toLowerCase();
+  for (const [cidade, uf] of Object.entries(CIDADE_UF_MAP)) {
+    if (lower.includes(cidade)) return uf;
+  }
+  for (const uf of Object.keys(UF_COORDS)) {
+    if (new RegExp('\\b' + uf + '\\b').test(name.toUpperCase())) return uf;
+  }
+  return null;
+}
+
+function getMarkerClass(units) {
+  const crits = units.filter(u => u.termometro === 'Crítico').length;
+  const atts  = units.filter(u => u.termometro === 'Atenção').length;
+  const sauds = units.filter(u => u.termometro === 'Saudável').length;
+  const total = units.length;
+  if (!total) return 'saud';
+  // Regra: se >50% crítico → crit; se >50% saudável → saud; senão → att ou mixed
+  if (crits / total > 0.5) return 'crit';
+  if (sauds / total > 0.5) return 'saud';
+  if (atts  / total > 0.5) return 'att';
+  if (crits > 0) return 'crit';
+  return 'mixed';
+}
+
+function buildBrazilMap() {
+  const svg = document.getElementById('brazilMapSvg');
+  if (!svg) return;
+
+  // Desenha estados
+  let statesHTML = '';
+  for (const [uf, path] of Object.entries(ESTADO_PATHS)) {
+    statesHTML += `<path class="estado" data-uf="${uf}" d="${path}"><title>${uf}</title></path>`;
+  }
+  svg.innerHTML = statesHTML;
+
+  if (!UNIDADES.length) {
+    renderMapLegend([]);
+    return;
+  }
+
+  // Agrupa unidades por regional
+  const regionais = [...new Set(UNIDADES.map(d => d.regional))].sort();
+
+  // Calcula posição de cada regional
+  const regionalData = regionais.map((r, idx) => {
+    const units = UNIDADES.filter(d => d.regional === r);
+    // Tenta detectar UFs das unidades dessa regional
+    const ufs = units.map(u => detectUfFromName(u.unidade)).filter(Boolean);
+    const uniqueUfs = [...new Set(ufs)];
+
+    let cx, cy;
+    if (uniqueUfs.length > 0) {
+      // Centroide das UFs detectadas
+      const coords = uniqueUfs.map(uf => UF_COORDS[uf]).filter(Boolean);
+      if (coords.length) {
+        cx = Math.round(coords.reduce((s, c) => s + c[0], 0) / coords.length);
+        cy = Math.round(coords.reduce((s, c) => s + c[1], 0) / coords.length);
+      }
+    }
+    if (!cx) {
+      // Fallback por índice
+      const fb = FALLBACK_POSITIONS[idx % FALLBACK_POSITIONS.length];
+      cx = fb[0]; cy = fb[1];
+    }
+
+    const cls = getMarkerClass(units);
+    const crit = units.filter(u => u.termometro === 'Crítico').length;
+    const att  = units.filter(u => u.termometro === 'Atenção').length;
+    const saud = units.filter(u => u.termometro === 'Saudável').length;
+    // Iniciais do GRP (ex: "Alessandro Vicentini" → "AV")
+    const initials = r.split(' ').filter(w => w.length > 1).slice(0,2).map(w => w[0].toUpperCase()).join('');
+    return { r, units, cls, cx, cy, crit, att, saud, initials, total: units.length };
+  });
+
+  // Renderiza marcadores
+  regionalData.forEach(d => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', `map-marker ${d.cls}`);
+    g.setAttribute('transform', `translate(${d.cx},${d.cy})`);
+    g.setAttribute('data-regional', d.r);
+
+    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    bg.setAttribute('class', 'bg');
+    bg.setAttribute('r', '16');
+    g.appendChild(bg);
+
+    const core = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    core.setAttribute('class', 'core');
+    core.setAttribute('r', '11');
+    g.appendChild(core);
+
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    txt.textContent = d.initials || d.total;
+    g.appendChild(txt);
+
+    // Tooltip hover
+    g.addEventListener('mouseenter', (e) => showMapTooltip(e, d));
+    g.addEventListener('mouseleave', hideMapTooltip);
+    g.addEventListener('mousemove', moveMapTooltip);
+
+    // Clique filtra o main-grid
+    g.addEventListener('click', () => {
+      stateExec.regional = stateExec.regional === d.r ? null : d.r;
+      renderAllExec();
+      renderMapLegend(regionalData);
+    });
+
+    svg.appendChild(g);
+  });
+
+  renderMapLegend(regionalData);
+}
+
+function showMapTooltip(e, d) {
+  const tooltip = document.getElementById('mapTooltip');
+  tooltip.innerHTML = `
+    <div class="map-tooltip-name">${d.r}</div>
+    <div class="map-tooltip-row"><span class="map-tooltip-dot" style="background:var(--green)"></span>${d.saud} saudável${d.saud !== 1 ? 'is' : ''}</div>
+    <div class="map-tooltip-row"><span class="map-tooltip-dot" style="background:var(--amber)"></span>${d.att} atenção</div>
+    <div class="map-tooltip-row"><span class="map-tooltip-dot" style="background:var(--red)"></span>${d.crit} crítica${d.crit !== 1 ? 's' : ''}</div>
+    <div class="map-tooltip-row" style="margin-top:4px;padding-top:4px;border-top:1px solid var(--line)"><strong>${d.total} unidade${d.total !== 1 ? 's' : ''} no total</strong></div>
+  `;
+  tooltip.classList.add('show');
+  moveMapTooltip(e);
+}
+
+function moveMapTooltip(e) {
+  const tooltip = document.getElementById('mapTooltip');
+  const wrap = document.getElementById('mapWrap');
+  if (!wrap) return;
+  const rect = wrap.getBoundingClientRect();
+  let x = e.clientX - rect.left + 14;
+  let y = e.clientY - rect.top - 10;
+  // Evita sair pela direita
+  if (x + 240 > rect.width) x = e.clientX - rect.left - 250;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top  = y + 'px';
+}
+
+function hideMapTooltip() {
+  document.getElementById('mapTooltip').classList.remove('show');
+}
+
+function renderMapLegend(regionalData) {
+  const legend = document.getElementById('mapLegendList');
+  const summary = document.getElementById('mapLegendSummary');
+  if (!legend) return;
+
+  const COLOR = { crit:'var(--red)', att:'var(--amber)', saud:'var(--green)', mixed:'var(--navy)' };
+  const LABEL = { crit:'Crítico', att:'Atenção', saud:'Saudável', mixed:'Misto' };
+
+  if (!regionalData.length) {
+    legend.innerHTML = '<div style="font-size:12px;color:var(--ink-soft);padding:8px 0;">Sem dados carregados.</div>';
+    summary.innerHTML = '';
+    return;
+  }
+
+  legend.innerHTML = regionalData.map(d => {
+    const isSel = stateExec.regional === d.r;
+    return `<div class="map-legend-row ${isSel ? 'sel' : ''}" data-leg-regional="${d.r}">
+      <span class="map-legend-dot" style="background:${COLOR[d.cls]}"></span>
+      <span class="map-legend-label">${d.r.split(' ')[0]}</span>
+      <span class="map-legend-count">${d.total}</span>
+    </div>`;
+  }).join('');
+
+  document.querySelectorAll('[data-leg-regional]').forEach(el => {
+    el.addEventListener('click', () => {
+      const r = el.getAttribute('data-leg-regional');
+      stateExec.regional = stateExec.regional === r ? null : r;
+      renderAllExec();
+      buildBrazilMap(); // reconstrói marcadores com seleção atualizada
+    });
+  });
+
+  // Resumo
+  const total = UNIDADES.length;
+  const crit  = UNIDADES.filter(u => u.termometro === 'Crítico').length;
+  const att   = UNIDADES.filter(u => u.termometro === 'Atenção').length;
+  const saud  = UNIDADES.filter(u => u.termometro === 'Saudável').length;
+  summary.innerHTML = `
+    <strong>${total}</strong> unidades · <strong>${regionalData.length}</strong> regionais<br>
+    <span style="color:var(--green)">●</span> ${saud} saudáveis &nbsp;
+    <span style="color:var(--amber)">●</span> ${att} atenção &nbsp;
+    <span style="color:var(--red)">●</span> ${crit} críticas
+  `;
+}
+
+
 let stateInd = { unidadesSelecionadas:null, indicador:'todos', mostrarVariacao:true };
 
-function getUnidadesInd() { return [...new Set(IND_DADOS.map(d=>d.unidade))].sort(); }
+function getUnidadesInd() { return [...new Set(IND_DADOS.map(d => d.unidade))].sort(); }
 function getUnidadesAtivas() {
   return stateInd.unidadesSelecionadas && stateInd.unidadesSelecionadas.length > 0
     ? stateInd.unidadesSelecionadas : getUnidadesInd();
 }
 function getMesesDisponiveis(unidade, indicador) {
-  return IND_DADOS.filter(d=>d.unidade===unidade&&d.indicador===indicador)
-    .map(d=>d.mes).filter((m,i,a)=>a.indexOf(m)===i)
-    .sort((a,b)=>MESES_ORDEM.indexOf(a)-MESES_ORDEM.indexOf(b));
+  return IND_DADOS
+    .filter(d => d.unidade === unidade && d.indicador === indicador)
+    .map(d => d.mes)
+    .filter((m, i, a) => a.indexOf(m) === i)
+    .sort((a, b) => MESES_ORDEM.indexOf(a) - MESES_ORDEM.indexOf(b));
 }
 function getMetaReal(indicador) {
   return IND_METAS[indicador] !== undefined ? IND_METAS[indicador] : (METAS_CONFIG[indicador]||{}).meta;
@@ -1014,61 +1335,88 @@ function calcEvolucao(unidade, indicador) {
   const meses = getMesesDisponiveis(unidade, indicador);
   if (meses.length < 2) return null;
   const ult = meses[meses.length-1], pen = meses[meses.length-2];
-  const vU = IND_DADOS.find(d=>d.unidade===unidade&&d.indicador===indicador&&d.mes===ult).resultado;
-  const vP = IND_DADOS.find(d=>d.unidade===unidade&&d.indicador===indicador&&d.mes===pen).resultado;
-  if (vP===0) return null;
+  const vU = IND_DADOS.find(d => d.unidade===unidade && d.indicador===indicador && d.mes===ult).resultado;
+  const vP = IND_DADOS.find(d => d.unidade===unidade && d.indicador===indicador && d.mes===pen).resultado;
+  if (vP === 0) return null;
   const mc = METAS_CONFIG[indicador];
-  const melhorou = mc ? (mc.direcao==='menor'?vU<vP:vU>vP) : null;
-  return { variacaoPct:Math.abs(((vU-vP)/Math.abs(vP))*100), melhorou, piorou:melhorou===null?null:!melhorou&&vU!==vP, ultimoMes:ult, penultimoMes:pen };
+  const melhorou = mc ? (mc.direcao==='menor' ? vU<vP : vU>vP) : null;
+  return {
+    variacaoPct: Math.abs(((vU - vP) / Math.abs(vP)) * 100),
+    melhorou,
+    piorou: melhorou === null ? null : !melhorou && vU !== vP,
+    ultimoMes: ult,
+    penultimoMes: pen
+  };
 }
 function calcEvolucaoMedia(unidades, indicador) {
-  const evos = unidades.map(u=>calcEvolucao(u,indicador)).filter(e=>e);
+  const evos = unidades.map(u => calcEvolucao(u, indicador)).filter(e => e);
   if (!evos.length) return null;
-  return evos.reduce((acc,e)=>({ variacaoPct:(acc.variacaoPct+e.variacaoPct)/2, melhorou:e.melhorou, piorou:e.piorou, ultimoMes:e.ultimoMes, penultimoMes:e.penultimoMes }));
+  const avg = evos.reduce((acc, e) => acc + e.variacaoPct, 0) / evos.length;
+  const ultimo = evos[evos.length - 1];
+  return { variacaoPct: avg, melhorou: ultimo.melhorou, piorou: ultimo.piorou, ultimoMes: ultimo.ultimoMes, penultimoMes: ultimo.penultimoMes };
 }
 function renderEvoBadge(evo) {
   if (!evo) return '<span class="evo-badge evo-flat">sem histórico</span>';
-  const cls = evo.melhorou?'evo-up':evo.piorou?'evo-down':'evo-flat';
-  const seta = evo.melhorou?'▲':evo.piorou?'▼':'—';
-  const txt = evo.melhorou?'melhora':evo.piorou?'piora':'estável';
+  const cls = evo.melhorou ? 'evo-up' : evo.piorou ? 'evo-down' : 'evo-flat';
+  const seta = evo.melhorou ? '▲' : evo.piorou ? '▼' : '—';
+  const txt  = evo.melhorou ? 'melhora' : evo.piorou ? 'piora' : 'estável';
   return `<span class="evo-badge ${cls}">${seta} ${evo.variacaoPct.toFixed(0)}% ${txt} vs ${evo.penultimoMes.slice(0,3)}</span>`;
 }
 
-function renderUnidadeMultiselect() {
-  const unidades = getUnidadesInd();
-  const panel = document.getElementById('unidadeMultiPanel');
-  const sel = stateInd.unidadesSelecionadas;
-  panel.innerHTML = `
-    <label class="ms-option"><input type="checkbox" id="msSelectAll" ${!sel?'checked':''}> Todas as unidades</label>
-    <div class="ms-divider"></div>
-    ${unidades.map(u=>`<label class="ms-option"><input type="checkbox" data-unidade-opt="${u}" ${!sel||sel.includes(u)?'checked':''}> ${u}</label>`).join('')}
-  `;
-  document.getElementById('msSelectAll').addEventListener('change', e => {
-    stateInd.unidadesSelecionadas = e.target.checked ? null : [];
-    renderUnidadeMultiselect(); renderIndicadores();
-  });
-  panel.querySelectorAll('[data-unidade-opt]').forEach(cb => {
-    cb.addEventListener('change', () => {
-      let atual = stateInd.unidadesSelecionadas ? [...stateInd.unidadesSelecionadas] : [...unidades];
-      const u = cb.getAttribute('data-unidade-opt');
-      if (cb.checked) { if(!atual.includes(u)) atual.push(u); } else atual=atual.filter(x=>x!==u);
-      stateInd.unidadesSelecionadas = atual.length===unidades.length ? null : atual;
-      renderUnidadeMultiselect(); renderIndicadores();
-    });
-  });
-  const ativas = getUnidadesAtivas();
-  const trigger = document.getElementById('unidadeMultiTrigger');
-  trigger.innerHTML = (!sel||ativas.length===unidades.length) ? 'Unidades: todas <span class="ms-arrow">▾</span>'
-    : ativas.length===1 ? `Unidade: ${ativas[0]} <span class="ms-arrow">▾</span>`
-    : `Unidades: ${ativas.length} selecionadas <span class="ms-arrow">▾</span>`;
+/* ============================================================
+   VIEW 3: INDICADORES — renderAcumulado (FUNÇÃO AUSENTE → CORRIGIDA)
+============================================================ */
+function renderAcumulado(unidades) {
+  const container = document.getElementById('acumuladoCards');
+  const inds = Object.keys(METAS_CONFIG);
+
+  const cards = inds.map(indicador => {
+    // Coleta todos os dados das unidades ativas para esse indicador
+    const todosOsDados = IND_DADOS.filter(d =>
+      unidades.includes(d.unidade) && d.indicador === indicador
+    );
+    if (!todosOsDados.length) return '';
+
+    // Média geral no ano (todas as unidades, todos os meses)
+    const mediaAno = todosOsDados.reduce((s, d) => s + d.resultado, 0) / todosOsDados.length;
+
+    // Último mês disponível (union de todas as unidades)
+    const mesesUnicos = [...new Set(todosOsDados.map(d => d.mes))]
+      .sort((a, b) => MESES_ORDEM.indexOf(a) - MESES_ORDEM.indexOf(b));
+    const ultimoMes = mesesUnicos[mesesUnicos.length - 1];
+
+    // Média do último mês disponível
+    const dadosUltimoMes = todosOsDados.filter(d => d.mes === ultimoMes);
+    const mediaUltimoMes = dadosUltimoMes.reduce((s, d) => s + d.resultado, 0) / dadosUltimoMes.length;
+
+    const mc = METAS_CONFIG[indicador];
+    const meta = getMetaReal(indicador);
+    const atingiu = mc.direcao === 'menor' ? mediaUltimoMes <= meta : mediaUltimoMes >= meta;
+    const cls = atingiu ? 'ok' : 'bad';
+
+    const metaLabel = mc.direcao === 'menor'
+      ? `Meta máx: ${formatIndValue(meta, indicador)}`
+      : `Meta mín: ${formatIndValue(meta, indicador)}`;
+
+    return `<div class="acc-card ${cls}">
+      <div class="acc-label">${indicador}</div>
+      <div class="acc-value">${formatIndValue(mediaUltimoMes, indicador)}</div>
+      <div class="acc-sub">${ultimoMes} · ${unidades.length} unidade${unidades.length > 1 ? 's' : ''} · ${metaLabel}</div>
+    </div>`;
+  }).filter(Boolean);
+
+  container.innerHTML = cards.length
+    ? cards.join('')
+    : '<div class="empty-state" style="grid-column:1/-1">Nenhum dado de indicadores disponível.</div>';
 }
 
-/* Paleta de cores */
+/* ============================================================
+   VIEW 3: INDICADORES — CHARTS
+============================================================ */
 const CHART_COLORS = [
   '#6B4FBB','#00B050','#1D4ED8','#DC2626','#F59E0B',
   '#0EA5E9','#8B5CF6','#EC4899','#14B8A6','#F97316'
 ];
-
 const CHART_INSTANCES = {};
 
 function destroyChart(id) {
@@ -1110,7 +1458,7 @@ function buildChart(canvasId, unidades, indicador) {
     const bgColors = valores.map(v => v === null ? 'transparent' : atingiuMeta(v, indicador) ? '#00B050' : '#DC2626');
     datasets.push({
       type: 'bar',
-      label: u.replace(/^BP |^FILIAL /, ''),
+      label: u.replace(/^BP |^FILIAL /i, ''),
       data: valores,
       backgroundColor: bgColors,
       borderRadius: 4,
@@ -1124,20 +1472,20 @@ function buildChart(canvasId, unidades, indicador) {
       });
       datasets.push({
         type: 'bar',
-        label: u.replace(/^BP |^FILIAL /, ''),
+        label: u.replace(/^BP |^FILIAL /i, ''),
         data: valores,
         backgroundColor: CHART_COLORS[i % CHART_COLORS.length],
         borderRadius: 4,
         order: 2
       });
     });
-
+    // Linha de média do grupo
     const mediasPorMes = todosMeses.map(m => {
       const vals = unidades.map(u => {
         const r = IND_DADOS.find(d => d.unidade===u && d.indicador===indicador && d.mes===m);
         return r ? r.resultado : null;
       }).filter(v => v !== null);
-      return vals.length ? vals.reduce((s,v) => s+v, 0) / vals.length : null;
+      return vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
     });
     datasets.push({
       type: 'line',
@@ -1153,6 +1501,7 @@ function buildChart(canvasId, unidades, indicador) {
     });
   }
 
+  // Linha de meta
   datasets.push({
     type: 'line',
     label: `Meta ${mc.direcao === 'menor' ? 'Máx' : 'Mín'} (${formatIndValue(meta, indicador)})`,
@@ -1178,16 +1527,12 @@ function buildChart(canvasId, unidades, indicador) {
             font: { size: 11, family: 'Arial' },
             color: textColor,
             boxWidth: 14,
-            padding: 12,
-            usePointStyle: false
+            padding: 12
           }
         },
         tooltip: {
           callbacks: {
-            label: ctx => {
-              if (ctx.raw === null) return null;
-              return ` ${ctx.dataset.label}: ${formatIndValue(ctx.raw, indicador)}`;
-            }
+            label: ctx => ctx.raw === null ? null : ` ${ctx.dataset.label}: ${formatIndValue(ctx.raw, indicador)}`
           }
         }
       },
@@ -1210,97 +1555,48 @@ function buildChart(canvasId, unidades, indicador) {
   });
 }
 
-/* ============================================================
-   RENDER ACUMULADO — cards de resumo anual por indicador
-   CORREÇÃO v5.04: função estava ausente no v5.03, causando
-   ReferenceError que abortava toda a renderização de indicadores
-============================================================ */
-function renderAcumulado(unidades) {
-  const inds = Object.keys(METAS_CONFIG);
-  const container = document.getElementById('acumuladoCards');
-  if (!unidades || unidades.length === 0) { container.innerHTML = ''; return; }
+/* Reconstrói todos os charts com os params do estado atual */
+function _buildAllCharts() {
+  const inds = stateInd.indicador === 'todos' ? Object.keys(METAS_CONFIG) : [stateInd.indicador];
+  const unidades = getUnidadesAtivas();
+  if (!unidades.length) return;
+  setTimeout(() => {
+    inds.forEach(indicador => {
 
-  const cards = inds.map(ind => {
-    const mc = METAS_CONFIG[ind];
-    const meta = IND_METAS[ind] !== undefined ? IND_METAS[ind] : mc.meta;
-
-    let totalOk = 0, totalFora = 0;
-    let somaResultados = 0, countResultados = 0;
-
-    unidades.forEach(u => {
-      const meses = getMesesDisponiveis(u, ind);
-      if (!meses.length) return;
-      const ult = meses[meses.length - 1];
-      const row = IND_DADOS.find(d => d.unidade === u && d.indicador === ind && d.mes === ult);
-      if (!row) return;
-      somaResultados += row.resultado;
-      countResultados++;
-      const atingiu = mc.direcao === 'menor' ? row.resultado <= meta : row.resultado >= meta;
-      if (atingiu) totalOk++; else totalFora++;
+      const temDados = unidades.some(u => getMesesDisponiveis(u, indicador).length > 0);
+      if (!temDados) return;
+      const canvasId = 'chart-' + indicador.replace(/[^a-z0-9]/gi, '_');
+      buildChart(canvasId, unidades, indicador);
     });
-
-    const media = countResultados ? somaResultados / countResultados : null;
-    const mediaFmt = media !== null ? formatIndValue(media, ind) : '—';
-    const metaLabel = mc.direcao === 'menor' ? 'Meta máx' : 'Meta mín';
-    const metaFmt = formatIndValue(meta, ind);
-    const atingiuMedia = media !== null ? atingiuMeta(media, ind) : null;
-    const cls = atingiuMedia === null ? '' : atingiuMedia ? 'ok' : 'bad';
-
-    // Mês de referência: o mais recente com dados
-    let ultMesRef = '—';
-    const mesesRef = [];
-    unidades.forEach(u => {
-      const ms = getMesesDisponiveis(u, ind);
-      if (ms.length) mesesRef.push(ms[ms.length - 1]);
-    });
-    if (mesesRef.length) {
-      ultMesRef = mesesRef.sort((a, b) => MESES_ORDEM.indexOf(b) - MESES_ORDEM.indexOf(a))[0];
-    }
-
-    return `<div class="acc-card ${cls}">
-      <div class="acc-label">${ind}</div>
-      <div class="acc-value">${mediaFmt}</div>
-      <div class="acc-sub">
-        ${metaLabel}: ${metaFmt}
-        &nbsp;&middot;&nbsp;
-        <strong style="color:var(--green)">${totalOk}</strong> no meta
-        &nbsp;&middot;&nbsp;
-        <strong style="color:var(--red)">${totalFora}</strong> fora
-        &nbsp;&middot;&nbsp;
-        ref: ${ultMesRef}
-      </div>
-    </div>`;
-  });
-
-  container.innerHTML = cards.join('');
+  }, 100);
 }
 
-let _indPendente = false;
-
+/* ============================================================
+   VIEW 3: INDICADORES — renderIndicadores PRINCIPAL
+============================================================ */
 function renderIndicadores() {
   if (IND_DADOS.length === 0) {
-    document.getElementById('acumuladoCards').innerHTML = '';
-    document.getElementById('indicadorCards').innerHTML =
-      '<div class="empty-state">Nenhum dado disponível para esse filtro.</div>';
+    document.getElementById('acumuladoCards').innerHTML =
+      '<div class="empty-state" style="grid-column:1/-1">Nenhum dado de indicadores disponível.</div>';
+    document.getElementById('indicadorCards').innerHTML = '';
     return;
   }
 
-  const abaAtiva = document.getElementById('view-indicadores').classList.contains('active');
   const unidades = getUnidadesAtivas();
-
-  if (unidades.length === 0) {
-    document.getElementById('acumuladoCards').innerHTML = '';
+  if (!unidades.length) {
     document.getElementById('indicadorCards').innerHTML =
       '<div class="empty-state">Selecione ao menos uma unidade.</div>';
+    document.getElementById('acumuladoCards').innerHTML = '';
     return;
   }
-
-  // Renderiza cards de acumulado (sempre, independente da aba estar visível)
-  renderAcumulado(unidades);
 
   const inds = stateInd.indicador === 'todos' ? Object.keys(METAS_CONFIG) : [stateInd.indicador];
   const multiUnidade = unidades.length > 1;
 
+  // Cards acumulados
+  renderAcumulado(unidades);
+
+  // Cards de evolução mensal com canvas para charts
   const cards = inds.map(indicador => {
     const temDados = unidades.some(u => getMesesDisponiveis(u, indicador).length > 0);
     if (!temDados) return '';
@@ -1327,30 +1623,49 @@ function renderIndicadores() {
     ? `<div class="unit-block"><div class="ind-grid">${cards}</div></div>`
     : '<div class="empty-state">Nenhum dado disponível para esse filtro.</div>';
 
-  if (!abaAtiva) {
-    _indPendente = true;
-    return;
+  // Só constrói charts se a aba está visível
+  const abaAtiva = document.getElementById('view-indicadores').classList.contains('active');
+  if (abaAtiva) {
+    _buildAllCharts();
   }
-
-  _indPendente = false;
-  _buildAllCharts(inds, unidades);
+  // Se a aba não está ativa, os charts serão criados quando o usuário clicar na aba
+  // (o listener do tab chama _buildAllCharts() sempre)
 }
 
-/* CORREÇÃO v5.04: resolvedInds e resolvedUnidades calculados antes do setTimeout
-   para evitar closure em variáveis mutáveis */
-function _buildAllCharts(indsParam, unidadesParam) {
-  const resolvedInds = indsParam || (stateInd.indicador === 'todos' ? Object.keys(METAS_CONFIG) : [stateInd.indicador]);
-  const resolvedUnidades = unidadesParam || getUnidadesAtivas();
-  setTimeout(() => {
-    resolvedInds.forEach(indicador => {
-      const temDados = resolvedUnidades.some(un => getMesesDisponiveis(un, indicador).length > 0);
-      if (!temDados) return;
-      const canvasId = 'chart-' + indicador.replace(/[^a-z0-9]/gi, '_');
-      buildChart(canvasId, resolvedUnidades, indicador);
+/* ============================================================
+   VIEW 3: MULTISELECT DE UNIDADES
+============================================================ */
+function renderUnidadeMultiselect() {
+  const unidades = getUnidadesInd();
+  const panel = document.getElementById('unidadeMultiPanel');
+  const sel = stateInd.unidadesSelecionadas;
+  panel.innerHTML = `
+    <label class="ms-option"><input type="checkbox" id="msSelectAll" ${!sel ? 'checked' : ''}> Todas as unidades</label>
+    <div class="ms-divider"></div>
+    ${unidades.map(u => `<label class="ms-option"><input type="checkbox" data-unidade-opt="${u}" ${!sel || sel.includes(u) ? 'checked' : ''}> ${u}</label>`).join('')}
+  `;
+  document.getElementById('msSelectAll').addEventListener('change', e => {
+    stateInd.unidadesSelecionadas = e.target.checked ? null : [];
+    renderUnidadeMultiselect();
+    renderIndicadores();
+  });
+  panel.querySelectorAll('[data-unidade-opt]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      let atual = stateInd.unidadesSelecionadas ? [...stateInd.unidadesSelecionadas] : [...unidades];
+      const u = cb.getAttribute('data-unidade-opt');
+      if (cb.checked) { if (!atual.includes(u)) atual.push(u); } else atual = atual.filter(x => x !== u);
+      stateInd.unidadesSelecionadas = atual.length === unidades.length ? null : atual;
+      renderUnidadeMultiselect();
+      renderIndicadores();
     });
-    // Garante acumulado visível ao ativar a aba (caso viesse de _indPendente)
-    if (!indsParam) renderAcumulado(resolvedUnidades);
-  }, 60);
+  });
+  const ativas = getUnidadesAtivas();
+  const trigger = document.getElementById('unidadeMultiTrigger');
+  trigger.innerHTML = (!sel || ativas.length === unidades.length)
+    ? 'Unidades: todas <span class="ms-arrow">▾</span>'
+    : ativas.length === 1
+      ? `Unidade: ${ativas[0]} <span class="ms-arrow">▾</span>`
+      : `Unidades: ${ativas.length} selecionadas <span class="ms-arrow">▾</span>`;
 }
 
 document.getElementById('unidadeMultiTrigger').addEventListener('click', e => {
@@ -1362,14 +1677,16 @@ document.addEventListener('click', e => {
     document.getElementById('unidadeMultiPanel').classList.remove('open');
 });
 document.querySelectorAll('#indFilterInd .filter-btn').forEach(btn => btn.addEventListener('click', () => {
-  document.querySelectorAll('#indFilterInd .filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active'); stateInd.indicador=btn.getAttribute('data-ind'); renderIndicadores();
+  document.querySelectorAll('#indFilterInd .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  stateInd.indicador = btn.getAttribute('data-ind');
+  renderIndicadores();
 }));
 document.getElementById('toggleVariacao').addEventListener('click', () => {
   stateInd.mostrarVariacao = !stateInd.mostrarVariacao;
   const btn = document.getElementById('toggleVariacao');
   btn.classList.toggle('active', stateInd.mostrarVariacao);
-  btn.textContent = 'Variação mês a mês: ' + (stateInd.mostrarVariacao?'ligada':'desligada');
+  btn.textContent = 'Variação mês a mês: ' + (stateInd.mostrarVariacao ? 'ligada' : 'desligada');
   renderIndicadores();
 });
 
@@ -1378,7 +1695,7 @@ document.getElementById('toggleVariacao').addEventListener('click', () => {
 ============================================================ */
 function formatUpdatePill(iso) {
   const d = new Date(iso);
-  const meses=['jan.','fev.','mar.','abr.','mai.','jun.','jul.','ago.','set.','out.','nov.','dez.'];
+  const meses = ['jan.','fev.','mar.','abr.','mai.','jun.','jul.','ago.','set.','out.','nov.','dez.'];
   return `atualizado ${d.getDate()} de ${meses[d.getMonth()]}, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 }
 function updateLastUpdate() {
@@ -1390,11 +1707,12 @@ function applyTheme(t) {
   try { localStorage.setItem('gestaoUnidadesTheme', t); } catch(e){}
 }
 function initTheme() {
-  let saved=null; try { saved=localStorage.getItem('gestaoUnidadesTheme'); } catch(e){}
-  applyTheme(saved||'light');
+  let saved = null;
+  try { saved = localStorage.getItem('gestaoUnidadesTheme'); } catch(e){}
+  applyTheme(saved || 'light');
 }
 document.getElementById('themeToggle').addEventListener('click', () => {
-  applyTheme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light');
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
   if (document.getElementById('view-indicadores').classList.contains('active')) {
     renderIndicadores();
   }
